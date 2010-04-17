@@ -27,11 +27,13 @@ class App < OpenStruct
     File.expand_path(name)
   end
 
-  def monit_config
+  def write_monit_config (f)
+    f.puts %Q(# Application: #{name})
     # TODO ...
   end
 
-  def nginx_config
+  def write_nginx_config (f)
+    f.puts %Q(# Application: #{name})
     # TODO ...
   end
 end
@@ -72,10 +74,7 @@ class Server < OpenStruct
       f.puts %Q(check file nginx_conf with path #{File.expand_path(nginx_conf)})
       f.puts %Q(  if changed checksum then exec "#{nginx_reload}")
       # Add application-specific Monit configuration
-      apps.each do |app|
-        f.puts %Q(# Application: #{app.name})
-        f.puts app.monit_config
-      end
+      apps.each { |app| app.write_monit_config(f) }
     end
   end
 
@@ -84,10 +83,7 @@ class Server < OpenStruct
     replace_file nginx_conf do |f|
       f.puts %Q(# Automagically generated config)
       # Add application-specific Nginx configuration
-      apps.each do |app|
-        f.puts %Q(# Application: #{app.name})
-        f.puts app.nginx_config
-      end
+      apps.each { |app| app.write_nginx_config(f) }
     end
   end
 
