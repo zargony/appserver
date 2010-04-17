@@ -22,15 +22,13 @@ task :default => [ :monit, :nginx ]
 task :monit do |t|
   puts 'Creating monit configuration...'
   replace_file config.monitrc do |f|
-    f.puts '# TODO...'
-    # TODO
+    f.puts %Q(# Automagically generated config)
   end
 end
 
 task :nginx do |t|
   puts 'Creating nginx configuration...'
   replace_file config.nginxconf do |f|
-    f.puts '# TODO...'
-    # TODO ...
+    f.puts %Q(# Automagically generated config)
   end
 end
