@@ -1,5 +1,11 @@
 # Name of the monit configuration file that should be written
 #monit_conf: monitrc
 
+# Command to execute to tell monit to reload the configuration
+#monit_reload: /usr/sbin/monit reload
+
 # Name of the nginx configuration file that should be written
 #nginx_conf: nginx.conf
+
+# Command to execute to tell nginx to reload the configuration
+#monit_reload: /usr/sbin/nginx -s reload
