@@ -24,6 +24,10 @@ class App < OpenStruct
     File.expand_path(name)
   end
 
+  def base_port
+    server.base_port + 100 * server.apps.index(self)
+  end
+
   def rack_config
     File.expand_path('config.ru', dir)
   end
@@ -38,7 +42,7 @@ class App < OpenStruct
     if rack?
       (0...instances).each do |i|
         pidfile = File.expand_path("#{name}_#{i}.pid")
-        cmd, args = rack_server.gsub(/PORT/, 'XXX').gsub(/CONFIG/, rack_config).split(/\s/, 2)
+        cmd, args = rack_server.gsub(/PORT/, "#{base_port+i}").gsub(/CONFIG/, rack_config).split(/\s/, 2)
         f.puts %Q(check process app_#{name}_#{i} with pidfile #{pidfile})
         f.puts %Q(  start program = "/sbin/start-stop-daemon --start --quiet --pidfile #{pidfile} --exec #{cmd} -- #{args}")
         f.puts %Q(  stop program = "/sbin/start-stop-daemon --stop --quiet --pidfile #{pidfile} --exec #{cmd}")
@@ -61,6 +65,7 @@ class Server < OpenStruct
     :nginx_reload => '/usr/sbin/nginx -s reload',
     :rack_server => 'thin -a 127.0.0.1 -p PORT -e production -R CONFIG start',
     :instances => 3,
+    :base_port => 20000,
     :domain => `/bin/hostname -f`.chomp.gsub(/^[^.]+\./, ''),
   }
 

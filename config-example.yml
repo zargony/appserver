@@ -22,6 +22,9 @@
 # Default number of application instances
 #instances: 3
 
+# Base port number to use for application servers
+#base_port: 20000
+
 # If no explicit hostname is specified for an application, it'll be
 # configured as a subdomain of this domain
 #domain: <system's domainname>
