@@ -11,6 +11,19 @@ class Hash
   end
 end
 
+class App < OpenStruct
+  DEFAULTS = {
+    :instances => 3,
+  }
+
+  def initialize (server, name, settings)
+    settings = DEFAULTS.merge((settings || {}).symbolize_keys!)
+    super(settings)
+    self.server, self.name = server, name
+    self.hostname ||= "#{name}.#{server.domain}"
+  end
+end
+
 class Server < OpenStruct
   DEFAULTS = {
     :monit_conf => 'monitrc',
@@ -27,8 +40,14 @@ class Server < OpenStruct
 
   def initialize (config)
     config = DEFAULTS.merge((config || {}).symbolize_keys!)
+    appconfigs = config.delete(:apps) || {}
     super(config)
+    @apps = appconfigs.inject([]) do |memo, (name, settings)|
+      memo << App.new(self, name, settings)
+    end
   end
+
+  attr_reader :apps
 
   def update_monit
     puts 'Creating monit configuration...'

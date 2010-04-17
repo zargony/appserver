@@ -17,3 +17,26 @@
 # If no explicit hostname is specified for an application, it'll
 # be configured as a subdomain of this domain
 #domain: <system's domainname>
+
+# Default number of application instances
+#instances: 3
+
+#
+# Application settings
+#
+
+# Every application must be listed under 'apps' with a unique key
+# and a hash of settings. All settings are optional.
+#
+# apps:
+#   # A simple application using default settings
+#   mypage: {}
+#
+#   # An application with totally customized settings
+#   blog:
+#     # The hostname that this application should receive requests
+#     # for. Defaults to <appname>.<domain>
+#     hostname: blog.example.com
+#
+#     # The number of application instances to keep running
+#     instances: 5
