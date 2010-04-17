@@ -5,8 +5,8 @@ require 'yaml'
 Dir.chdir(File.expand_path('..', __FILE__))
 
 config = OpenStruct.new({
-  'monitrc' => 'monitrc',
-  'nginxconf' => 'nginx.conf',
+  'monit_conf' => 'monitrc',
+  'nginx_conf' => 'nginx.conf',
 }.merge(YAML.load_file('config.yml')))
 
 def replace_file (filename)
@@ -21,14 +21,14 @@ task :default => [ :monit, :nginx ]
 
 task :monit do |t|
   puts 'Creating monit configuration...'
-  replace_file config.monitrc do |f|
+  replace_file config.monit_conf do |f|
     f.puts %Q(# Automagically generated config)
   end
 end
 
 task :nginx do |t|
   puts 'Creating nginx configuration...'
-  replace_file config.nginxconf do |f|
+  replace_file config.nginx_conf do |f|
     f.puts %Q(# Automagically generated config)
   end
 end
