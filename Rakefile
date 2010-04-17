@@ -22,6 +22,18 @@ class App < OpenStruct
     self.server, self.name = server, name
     self.hostname ||= "#{name}.#{server.domain}"
   end
+
+  def dir
+    File.expand_path(name)
+  end
+
+  def monit_config
+    # TODO ...
+  end
+
+  def nginx_config
+    # TODO ...
+  end
 end
 
 class Server < OpenStruct
@@ -53,10 +65,17 @@ class Server < OpenStruct
     puts 'Creating monit configuration...'
     replace_file monit_conf do |f|
       f.puts %Q(# Automagically generated config)
+      # Let Monit reload itself if this configuration changes
       f.puts %Q(check file monit_conf with path #{File.expand_path(monit_conf)})
       f.puts %Q(  if changed checksum then exec "#{monit_reload}")
+      # Reload Nginx if its configuration changes
       f.puts %Q(check file nginx_conf with path #{File.expand_path(nginx_conf)})
       f.puts %Q(  if changed checksum then exec "#{nginx_reload}")
+      # Add application-specific Monit configuration
+      apps.each do |app|
+        f.puts %Q(# Application: #{app.name})
+        f.puts app.monit_config
+      end
     end
   end
 
@@ -64,6 +83,11 @@ class Server < OpenStruct
     puts 'Creating nginx configuration...'
     replace_file nginx_conf do |f|
       f.puts %Q(# Automagically generated config)
+      # Add application-specific Nginx configuration
+      apps.each do |app|
+        f.puts %Q(# Application: #{app.name})
+        f.puts app.nginx_config
+      end
     end
   end
 
