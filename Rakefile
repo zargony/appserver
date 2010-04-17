@@ -34,9 +34,9 @@ task :monit do |t|
   puts 'Creating monit configuration...'
   replace_file config.monit_conf do |f|
     f.puts %Q(# Automagically generated config)
-    f.puts %Q(check file webapp_monitrc with path #{File.expand_path(config.monit_conf)})
+    f.puts %Q(check file monit_conf with path #{File.expand_path(config.monit_conf)})
     f.puts %Q(  if changed checksum then exec "#{config.monit_reload}")
-    f.puts %Q(check file webapp_nginxconf with path #{File.expand_path(config.nginx_conf)})
+    f.puts %Q(check file nginx_conf with path #{File.expand_path(config.nginx_conf)})
     f.puts %Q(  if changed checksum then exec "#{config.nginx_reload}")
   end
 end
