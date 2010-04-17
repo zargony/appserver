@@ -59,7 +59,7 @@ class Server < OpenStruct
     :monit_reload => '/usr/sbin/monit',
     :nginx_conf => 'nginx.conf',
     :nginx_reload => '/usr/sbin/nginx -s reload',
-    :rack_server => 'thin -p PORT -e production -R CONFIG start',
+    :rack_server => 'thin -a 127.0.0.1 -p PORT -e production -R CONFIG start',
     :instances => 3,
     :domain => `/bin/hostname -f`.chomp.gsub(/^[^.]+\./, ''),
   }
