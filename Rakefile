@@ -1,4 +1,11 @@
+require 'ostruct'
 require 'tempfile'
+require 'yaml'
+
+config = OpenStruct.new({
+  'monitrc' => 'monitrc',
+  'nginxconf' => 'nginx.conf',
+}.merge(YAML.load_file('config.yml')))
 
 def replace_file (filename)
   tempfile = Tempfile.new(['_', File.basename(filename)], File.dirname(filename))
@@ -12,7 +19,7 @@ task :default => [ :monit, :nginx ]
 
 task :monit do |t|
   puts 'Creating monit configuration...'
-  replace_file 'monitrc' do |f|
+  replace_file config.monitrc do |f|
     f.puts '# TODO...'
     # TODO
   end
@@ -20,7 +27,7 @@ end
 
 task :nginx do |t|
   puts 'Creating nginx configuration...'
-  replace_file 'nginx.conf' do |f|
+  replace_file config.nginxconf do |f|
     f.puts '# TODO...'
     # TODO ...
   end

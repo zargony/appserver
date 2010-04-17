@@ -1,0 +1,5 @@
+# Name of the monit configuration file that should be written
+#monitrc: monitrc
+
+# Name of the nginx configuration file that should be written
+#nginxconf: nginx.conf
