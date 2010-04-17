@@ -17,6 +17,7 @@ class Server < OpenStruct
     :monit_reload => '/usr/sbin/monit',
     :nginx_conf => 'nginx.conf',
     :nginx_reload => '/usr/sbin/nginx -s reload',
+    :domain => `/bin/hostname -f`.chomp.gsub(/^[^.]+\./, ''),
   }
 
   def self.load (filename = 'config.yml')

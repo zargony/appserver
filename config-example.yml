@@ -1,3 +1,7 @@
+#
+# Global settings
+#
+
 # Name of the monit configuration file that should be written
 #monit_conf: monitrc
 
@@ -9,3 +13,7 @@
 
 # Command to execute to tell nginx to reload the configuration
 #nginx_reload: /usr/sbin/nginx -s reload
+
+# If no explicit hostname is specified for an application, it'll
+# be configured as a subdomain of this domain
+#domain: <system's domainname>
