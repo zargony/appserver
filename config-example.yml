@@ -8,4 +8,4 @@
 #nginx_conf: nginx.conf
 
 # Command to execute to tell nginx to reload the configuration
-#monit_reload: /usr/sbin/nginx -s reload
+#nginx_reload: /usr/sbin/nginx -s reload
