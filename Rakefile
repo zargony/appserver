@@ -2,6 +2,8 @@ require 'ostruct'
 require 'tempfile'
 require 'yaml'
 
+Dir.chdir(File.expand_path('..', __FILE__))
+
 config = OpenStruct.new({
   'monitrc' => 'monitrc',
   'nginxconf' => 'nginx.conf',
