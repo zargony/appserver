@@ -14,12 +14,17 @@
 # Command to execute to tell nginx to reload the configuration
 #nginx_reload: /usr/sbin/nginx -s reload
 
-# If no explicit hostname is specified for an application, it'll be
-# configured as a subdomain of this domain
-#domain: <system's domainname>
+# Command to execute to start an application server for a Rack application.
+# PORT will be replaces with the local port number the server should listen
+# on and CONFIG is the filename of the Rack configuration file (config.ru)
+#rack_server_command: thin -p PORT -e production -R CONFIG start
 
 # Default number of application instances
 #instances: 3
+
+# If no explicit hostname is specified for an application, it'll be
+# configured as a subdomain of this domain
+#domain: <system's domainname>
 
 #
 # Application settings
@@ -34,9 +39,13 @@
 #
 #   # An application with totally customized settings
 #   blog:
+#     # A custom Rack server command using a different Ruby version
+#     rack_server: /usr/local/rvm/gems/ree-1.8.7-2010.02/bin/thin -p PORT -e production -R CONFIG start
+#
+#     # The number of application instances to keep running
+#     instances: 5
+#
 #     # The hostname that this application should receive requests for.
 #     # Defaults to <appname>.<domain>
 #     hostname: blog.example.com
 #
-#     # The number of application instances to keep running
-#     instances: 5
