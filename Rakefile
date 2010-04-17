@@ -4,12 +4,21 @@ require 'yaml'
 
 Dir.chdir(File.expand_path('..', __FILE__))
 
-config = OpenStruct.new({
-  'monit_conf' => 'monitrc',
-  'monit_reload' => '/usr/sbin/monit',
-  'nginx_conf' => 'nginx.conf',
-  'nginx_reload' => '/usr/sbin/nginx -s reload',
-}.merge(YAML.load_file('config.yml')))
+class Hash
+  def symbolize_keys!
+    keys.each { |key| self[key.to_sym] = delete(key) }
+    self
+  end
+end
+
+default_config = {
+  :monit_conf => 'monitrc',
+  :monit_reload => '/usr/sbin/monit',
+  :nginx_conf => 'nginx.conf',
+  :nginx_reload => '/usr/sbin/nginx -s reload',
+}
+
+config = OpenStruct.new(default_config.merge(YAML.load_file('config.yml').symbolize_keys!))
 
 def replace_file (filename)
   tempfile = Tempfile.new(['_', File.basename(filename)], File.dirname(filename))
