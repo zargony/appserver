@@ -17,7 +17,7 @@
 # Command to execute to start an application server for a Rack application.
 # PORT will be replaces with the local port number the server should listen
 # on and CONFIG is the filename of the Rack configuration file (config.ru)
-#rack_server_command: thin -p PORT -e production -R CONFIG start
+#rack_server_command: thin -a 127.0.0.1 -p PORT -e production -R CONFIG start
 
 # Default number of application instances
 #instances: 3
@@ -40,7 +40,7 @@
 #   # An application with totally customized settings
 #   blog:
 #     # A custom Rack server command using a different Ruby version
-#     rack_server: /usr/local/rvm/gems/ree-1.8.7-2010.02/bin/thin -p PORT -e production -R CONFIG start
+#     rack_server: /usr/local/rvm/gems/ree-1.8.7-2010.02/bin/thin -a 127.0.0.1 -p PORT -e production -R CONFIG start
 #
 #     # The number of application instances to keep running
 #     instances: 5
