@@ -12,14 +12,11 @@ class Hash
 end
 
 class App < OpenStruct
-  DEFAULTS = {
-    :instances => 3,
-  }
-
   def initialize (server, name, settings)
-    settings = DEFAULTS.merge((settings || {}).symbolize_keys!)
     super(settings)
     self.server, self.name = server, name
+    self.rack_server ||= server.rack_server
+    self.instances ||= server.instances
     self.hostname ||= "#{name}.#{server.domain}"
   end
 
@@ -27,12 +24,30 @@ class App < OpenStruct
     File.expand_path(name)
   end
 
+  def rack_config
+    File.expand_path('config.ru', dir)
+  end
+
+  def rack?
+    File.exist?(rack_config)
+  end
+
   def write_monit_config (f)
+    f.puts %Q()
     f.puts %Q(# Application: #{name})
-    # TODO ...
+    if rack?
+      (0...instances).each do |i|
+        pidfile = File.expand_path("#{name}_#{i}.pid")
+        cmd, args = rack_server.gsub(/PORT/, 'XXX').gsub(/CONFIG/, rack_config).split(/\s/, 2)
+        f.puts %Q(check process app_#{name}_#{i} with pidfile #{pidfile})
+        f.puts %Q(  start program = "/sbin/start-stop-daemon --start --quiet --pidfile #{pidfile} --exec #{cmd} -- #{args}")
+        f.puts %Q(  stop program = "/sbin/start-stop-daemon --stop --quiet --pidfile #{pidfile} --exec #{cmd}")
+      end
+    end
   end
 
   def write_nginx_config (f)
+    f.puts %Q()
     f.puts %Q(# Application: #{name})
     # TODO ...
   end
@@ -44,6 +59,8 @@ class Server < OpenStruct
     :monit_reload => '/usr/sbin/monit',
     :nginx_conf => 'nginx.conf',
     :nginx_reload => '/usr/sbin/nginx -s reload',
+    :rack_server => 'thin -p PORT -e production -R CONFIG start',
+    :instances => 3,
     :domain => `/bin/hostname -f`.chomp.gsub(/^[^.]+\./, ''),
   }
 
