@@ -49,7 +49,7 @@ class App < OpenStruct
         socket = File.join(sockets_dir, "#{name}_#{i}.socket")
         f.puts %Q(check process #{name}_#{i} with pidfile #{pidfile})
         f.puts %Q(  start program = "#{thin} -S #{socket} -R #{rack_config} -d -l #{server_log} -P #{pidfile} #{thin_opts} start")
-        f.puts %Q(  stop program = "#{thin} -l #{logfile} -P #{pidfile} stop")
+        f.puts %Q(  stop program = "#{thin} -l #{server_log} -P #{pidfile} stop")
         f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
         f.puts %Q(  if failed unixsocket #{socket} protocol http request "/" hostheader "#{hostname.split(/\s/)[0]}" timeout #{http_check_timeout} then restart) if http_check_timeout > 0
