@@ -14,10 +14,12 @@
 # Command to execute to tell nginx to reload the configuration
 #nginx_reload: /usr/sbin/nginx -s reload
 
-# Command to execute to start an instance of a Rack application. PORT will
-# be replaces with the local port number the server should listen on and
-# CONFIG is the filename of the Rack configuration file (config.ru)
-#rack_server_command: thin -a 127.0.0.1 -p PORT -R CONFIG -e production -d start
+# Path to thin. If you installed thin using Rubygems, you probably want to
+# adjust this
+#thin: /usr/local/bin/thin
+
+# Extra options passed to thin
+#thin_opts: -e production
 
 # Default number of application instances
 #instances: 3
@@ -59,8 +61,9 @@
 #
 #   # An application with totally customized settings
 #   blog:
-#     # A custom Rack server command using a different Ruby version
-#     rack_server: /usr/local/rvm/gems/ree-1.8.7-2010.02/bin/thin -a 127.0.0.1 -p PORT -R CONFIG -e production -d start
+#     # A custom thin using a different Ruby and running in beta environment
+#     thin: /usr/local/rvm/gems/ree-1.8.7-2010.02/bin/thin
+#     thin_opts: -e beta
 #
 #     # The number of application instances to keep running
 #     instances: 5
