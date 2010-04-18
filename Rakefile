@@ -25,10 +25,6 @@ class App < OpenStruct
     File.expand_path(name)
   end
 
-  def base_port
-    server.base_port + 100 * server.apps.index(self)
-  end
-
   def rack_config
     File.expand_path('config.ru', dir)
   end
@@ -44,14 +40,14 @@ class App < OpenStruct
       cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
       (0...instances).each do |i|
         thin_cmd, thin_args = thin.split(/\s/, 2)
-        port = base_port + i
         pidfile = File.expand_path("#{name}_#{i}.pid")
+        socket = File.expand_path("#{name}_#{i}.socket")
         f.puts %Q(check process #{name}_#{i} with pidfile #{pidfile})
-        f.puts %Q(  start program = "/sbin/start-stop-daemon --start --quiet --pidfile #{pidfile} --exec #{thin_cmd} -- #{thin_args} -a 127.0.0.1 -p #{port} -R #{rack_config} -d -P #{pidfile} #{thin_opts} start")
+        f.puts %Q(  start program = "/sbin/start-stop-daemon --start --quiet --pidfile #{pidfile} --exec #{thin_cmd} -- #{thin_args} -S #{socket} -R #{rack_config} -d -P #{pidfile} #{thin_opts} start")
         f.puts %Q(  stop program = "/sbin/start-stop-daemon --stop --quiet --pidfile #{pidfile} --exec #{thin_cmd}")
         f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
-        f.puts %Q(  if failed host 127.0.0.1 port #{port} type tcp protocol http request "/" hostheader "#{hostname.split(/\s/)[0]}" timeout #{http_check_timeout} then restart) if http_check_timeout > 0
+        f.puts %Q(  if failed unixsocket #{socket} protocol http request "/" hostheader "#{hostname.split(/\s/)[0]}" timeout #{http_check_timeout} then restart) if http_check_timeout > 0
         f.puts %Q(  if 5 restarts within 5 cycles then timeout)
         f.puts %Q(  group #{name})
       end
@@ -74,7 +70,6 @@ class Server < OpenStruct
     :thin => '/usr/local/bin/thin',
     :thin_opts => '-e production',
     :instances => 3,
-    :base_port => 20000,
     :max_cpu_usage => nil,
     :max_memory_usage => nil,
     :usage_check_cycles => 5,

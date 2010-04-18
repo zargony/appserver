@@ -24,9 +24,6 @@
 # Default number of application instances
 #instances: 3
 
-# Base port number to use for application instances
-#base_port: 20000
-
 # Let Monit watch the CPU usage of instances and restart them if their
 # CPU usage exceeds this value
 #max_cpu_usage:
