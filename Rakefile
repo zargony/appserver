@@ -12,10 +12,13 @@ class Hash
 end
 
 class App < OpenStruct
+  attr_reader :server
+
   def initialize (server, name, settings)
     super(settings)
-    self.server, self.name = server, name
     [:thin, :thin_opts, :instances, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout].each do |key|
+    @server = server
+    self.name = name
       send("#{key}=", server.send(key)) unless send(key)
     end
     self.hostname ||= "#{name}.#{server.domain}"
