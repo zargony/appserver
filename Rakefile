@@ -32,7 +32,7 @@ class App < OpenStruct
   end
 
   def rack_config
-    File.expand_path('config.ru', dir)
+    File.join(dir, 'config.ru')
   end
 
   def rack?
@@ -46,8 +46,8 @@ class App < OpenStruct
       cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
       (0...instances).each do |i|
         thin_cmd, thin_args = thin.split(/\s/, 2)
-        pidfile = File.expand_path("#{name}_#{i}.pid", pids_dir)
-        socket = File.expand_path("#{name}_#{i}.socket", sockets_dir)
+        pidfile = File.join(pids_dir, "#{name}_#{i}.pid")
+        socket = File.join(sockets_dir, "#{name}_#{i}.socket")
         f.puts %Q(check process #{name}_#{i} with pidfile #{pidfile})
         f.puts %Q(  start program = "/sbin/start-stop-daemon --start --quiet --pidfile #{pidfile} --exec #{thin_cmd} -- #{thin_args} -S #{socket} -R #{rack_config} -d -l #{server_log} -P #{pidfile} #{thin_opts} start")
         f.puts %Q(  stop program = "/sbin/start-stop-daemon --stop --quiet --pidfile #{pidfile} --exec #{thin_cmd}")
