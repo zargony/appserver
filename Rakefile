@@ -15,8 +15,9 @@ class App < OpenStruct
   def initialize (server, name, settings)
     super(settings)
     self.server, self.name = server, name
-    self.rack_server ||= server.rack_server
-    self.instances ||= server.instances
+    [:rack_server, :instances].each do |key|
+      send("#{key}=", server.send(key)) unless send(key)
+    end
     self.hostname ||= "#{name}.#{server.domain}"
   end
 
