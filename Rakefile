@@ -58,7 +58,7 @@ class App < OpenStruct
         f.puts %Q(  stop program = "#{$0} -f #{File.expand_path(__FILE__)} stop APP_NAME=#{name} APP_INSTANCE=#{i}")
         f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
-        f.puts %Q(  if failed unixsocket #{socket(i)} protocol http request "/" timeout #{http_check_timeout} then restart) if http_check_timeout > 0
+        f.puts %Q(  if failed unixsocket #{socket(i)} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
         f.puts %Q(  if 5 restarts within 5 cycles then timeout)
         f.puts %Q(  group #{name})
       end
