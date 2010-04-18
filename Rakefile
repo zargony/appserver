@@ -69,7 +69,16 @@ class App < OpenStruct
     { 'APP_NAME' => name, 'GEM_HOME' => Gem.dir, 'GEM_PATH' => Gem.path.join(':') }
   end
 
+  def change_privileges
+    target_uid, target_gid = File.stat(dir).uid, File.stat(dir).gid
+    if Process.euid != target_uid || Process.egid != target_gid
+      Process::GID.change_privileges(target_gid)
+      Process::UID.change_privileges(target_uid)
+    end
+  end
+
   def start_instance (instance)
+    change_privileges
     if rack?
       exec(instance_env, "#{thin} -S #{socket(instance)} -R #{rack_config} -d -l #{server_log} -P #{pidfile(instance)} #{thin_opts} start", :unsetenv_others => true)
     else
@@ -78,6 +87,7 @@ class App < OpenStruct
   end
 
   def stop_instance (instance)
+    change_privileges
     if rack?
       exec(instance_env, "#{thin} -l #{server_log} -P #{pidfile(instance)} stop", :unsetenv_others => true)
     end
