@@ -72,8 +72,8 @@ class App < OpenStruct
   def change_privileges
     target_uid, target_gid = File.stat(dir).uid, File.stat(dir).gid
     if Process.euid != target_uid || Process.egid != target_gid
-      Process::GID.change_privileges(target_gid)
-      Process::UID.change_privileges(target_uid)
+      Process::GID.change_privilege(target_gid)
+      Process::UID.change_privilege(target_uid)
     end
   end
 
