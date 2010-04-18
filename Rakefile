@@ -101,6 +101,10 @@ class Server < OpenStruct
 
   attr_reader :apps
 
+  def app (name)
+    apps.find { |app| app.name == name }
+  end
+
   def update_monit
     puts 'Creating monit configuration...'
     replace_file monit_conf do |f|
