@@ -103,7 +103,7 @@ end
 class Server < OpenStruct
   DEFAULTS = {
     :monit_conf => 'monitrc',
-    :monit_reload => '/usr/sbin/monit',
+    :monit_reload => '/usr/sbin/monit reload',
     :nginx_conf => 'nginx.conf',
     :nginx_reload => '/usr/sbin/nginx -s reload',
     :thin => '/usr/local/bin/thin',
