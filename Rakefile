@@ -70,7 +70,7 @@ class Server < OpenStruct
     :monit_reload => '/usr/sbin/monit',
     :nginx_conf => 'nginx.conf',
     :nginx_reload => '/usr/sbin/nginx -s reload',
-    :rack_server => 'thin -a 127.0.0.1 -p PORT -e production -R CONFIG start',
+    :rack_server => 'thin -a 127.0.0.1 -p PORT -R CONFIG -e production -d start',
     :instances => 3,
     :base_port => 20000,
     :max_cpu_usage => nil,
