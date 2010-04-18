@@ -16,10 +16,13 @@ class App < OpenStruct
 
   def initialize (server, name, settings)
     super(settings)
-    [:thin, :thin_opts, :instances, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout].each do |key|
     @server = server
     self.name = name
+    [:thin, :thin_opts, :instances, :pids_dir, :sockets_dir, :server_log, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout].each do |key|
       send("#{key}=", server.send(key)) unless send(key)
+    end
+    [:pids_dir, :sockets_dir, :server_log].each do |key|
+      send("#{key}=", File.expand_path(send(key), dir))
     end
     self.hostname ||= "#{name}.#{server.domain}"
   end
@@ -43,10 +46,10 @@ class App < OpenStruct
       cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
       (0...instances).each do |i|
         thin_cmd, thin_args = thin.split(/\s/, 2)
-        pidfile = File.expand_path("#{name}_#{i}.pid")
-        socket = File.expand_path("#{name}_#{i}.socket")
+        pidfile = File.expand_path("#{name}_#{i}.pid", pids_dir)
+        socket = File.expand_path("#{name}_#{i}.socket", sockets_dir)
         f.puts %Q(check process #{name}_#{i} with pidfile #{pidfile})
-        f.puts %Q(  start program = "/sbin/start-stop-daemon --start --quiet --pidfile #{pidfile} --exec #{thin_cmd} -- #{thin_args} -S #{socket} -R #{rack_config} -d -P #{pidfile} #{thin_opts} start")
+        f.puts %Q(  start program = "/sbin/start-stop-daemon --start --quiet --pidfile #{pidfile} --exec #{thin_cmd} -- #{thin_args} -S #{socket} -R #{rack_config} -d -l #{server_log} -P #{pidfile} #{thin_opts} start")
         f.puts %Q(  stop program = "/sbin/start-stop-daemon --stop --quiet --pidfile #{pidfile} --exec #{thin_cmd}")
         f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
@@ -73,6 +76,9 @@ class Server < OpenStruct
     :thin => '/usr/local/bin/thin',
     :thin_opts => '-e production',
     :instances => 3,
+    :pids_dir => 'tmp/pids',
+    :sockets_dir => 'tmp/sockets',
+    :server_log => 'log/server.log',
     :max_cpu_usage => nil,
     :max_memory_usage => nil,
     :usage_check_cycles => 5,

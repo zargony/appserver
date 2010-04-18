@@ -24,6 +24,18 @@
 # Default number of application instances
 #instances: 3
 
+# Path where to store pid files of running instances. Defaults to the
+# tmp/pids directory in the application
+#pids_dir: tmp/pids
+
+# Path where to store sockets of running instances. Defaults to the
+# tmp/sockets directory in the application
+#sockets_dir: tmp/sockets
+
+# Path/name of the logfile for instance servers. Defaults to log/server.log
+# in the application
+#server_log: log/server.log
+
 # Let Monit watch the CPU usage of instances and restart them if their
 # CPU usage exceeds this value
 #max_cpu_usage:
@@ -64,6 +76,11 @@
 #
 #     # The number of application instances to keep running
 #     instances: 5
+#
+#     # Custom paths
+#     pids_dir: /tmp/blogapp
+#     sockets_dir: /tmp/blogapp
+#     server_log: /var/log/blog.log
 #
 #     # Custom resource checks
 #     max_cpu_usage: 80%
