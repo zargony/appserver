@@ -15,7 +15,7 @@ class App < OpenStruct
   def initialize (server, name, settings)
     super(settings)
     self.server, self.name = server, name
-    [:rack_server, :instances, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout].each do |key|
+    [:thin, :thin_opts, :instances, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout].each do |key|
       send("#{key}=", server.send(key)) unless send(key)
     end
     self.hostname ||= "#{name}.#{server.domain}"
@@ -43,14 +43,14 @@ class App < OpenStruct
     if rack?
       cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
       (0...instances).each do |i|
+        port = base_port + i
         pidfile = File.expand_path("#{name}_#{i}.pid")
-        cmd, args = rack_server.gsub(/PORT/, "#{base_port+i}").gsub(/CONFIG/, rack_config).split(/\s/, 2)
         f.puts %Q(check process #{name}_#{i} with pidfile #{pidfile})
-        f.puts %Q(  start program = "/sbin/start-stop-daemon --start --quiet --pidfile #{pidfile} --exec #{cmd} -- #{args}")
-        f.puts %Q(  stop program = "/sbin/start-stop-daemon --stop --quiet --pidfile #{pidfile} --exec #{cmd}")
+        f.puts %Q(  start program = "/sbin/start-stop-daemon --start --quiet --pidfile #{pidfile} --exec #{thin} -- -a 127.0.0.1 -p #{port} -R #{rack_config} -d -P #{pidfile} #{thin_opts} start")
+        f.puts %Q(  stop program = "/sbin/start-stop-daemon --stop --quiet --pidfile #{pidfile} --exec #{thin}")
         f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
-        f.puts %Q(  if failed host 127.0.0.1 port #{base_port+i} type tcp protocol http request "/" hostheader "#{hostname.split(/\s/)[0]}" timeout #{http_check_timeout} then restart) if http_check_timeout > 0
+        f.puts %Q(  if failed host 127.0.0.1 port #{port} type tcp protocol http request "/" hostheader "#{hostname.split(/\s/)[0]}" timeout #{http_check_timeout} then restart) if http_check_timeout > 0
         f.puts %Q(  if 5 restarts within 5 cycles then timeout)
         f.puts %Q(  group #{name})
       end
@@ -70,7 +70,8 @@ class Server < OpenStruct
     :monit_reload => '/usr/sbin/monit',
     :nginx_conf => 'nginx.conf',
     :nginx_reload => '/usr/sbin/nginx -s reload',
-    :rack_server => 'thin -a 127.0.0.1 -p PORT -R CONFIG -e production -d start',
+    :thin => '/usr/local/bin/thin',
+    :thin_opts => '-e production',
     :instances => 3,
     :base_port => 20000,
     :max_cpu_usage => nil,
