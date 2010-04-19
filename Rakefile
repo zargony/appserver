@@ -18,10 +18,10 @@ class App < OpenStruct
     super(settings)
     @server = server
     self.name = name
-    [:thin, :thin_opts, :instances, :pids_dir, :sockets_dir, :server_log, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout].each do |key|
+    [:thin, :thin_opts, :instances, :pids_dir, :sockets_dir, :server_log, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout, :access_log, :public_dir].each do |key|
       send("#{key}=", server.send(key)) unless send(key)
     end
-    [:pids_dir, :sockets_dir, :server_log].each do |key|
+    [:pids_dir, :sockets_dir, :server_log, :access_log, :public_dir].each do |key|
       send("#{key}=", File.expand_path(send(key), dir))
     end
     self.hostname ||= "#{name}.#{server.domain}"
@@ -94,9 +94,33 @@ class App < OpenStruct
   end
 
   def write_nginx_config (f)
-    f.puts %Q()
-    f.puts %Q(# Application: #{name})
-    # TODO ...
+    f.puts ""
+    f.puts "# Application: #{name}"
+    if rack?
+      f.puts "upstream #{name}_cluster {"
+      (0...instances).each do |i|
+        f.puts "  server unix:#{socket(i)};"
+      end
+      f.puts "}"
+      f.puts "server {"
+      f.puts "  listen 80;"
+      f.puts "  server_name #{hostname};"
+      f.puts "  root #{public_dir};"
+      f.puts "  access_log #{access_log};"
+      f.puts "  location / {"
+      f.puts "    proxy_set_header X-Real-IP $remote_addr;"
+      f.puts "    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
+      f.puts "    proxy_set_header Host $http_host;"
+      f.puts "    proxy_redirect off;"
+      # TODO: maintenance mode rewriting
+      f.puts "    try_files $uri/index.html $uri.html $uri @#{name}_cluster;"
+      f.puts "    error_page 500 502 503 504 /500.html;"
+      f.puts "  }"
+      f.puts "  location @#{name}_cluster {"
+      f.puts "    proxy_pass http://#{name}_cluster;"
+      f.puts "  }"
+      f.puts "}"
+    end
   end
 end
 
@@ -117,6 +141,8 @@ class Server < OpenStruct
     :usage_check_cycles => 5,
     :http_check_timeout => 30,
     :domain => `/bin/hostname -f`.chomp.gsub(/^[^.]+\./, ''),
+    :access_log => 'log/access.log',
+    :public_dir => 'public',
   }
 
   def self.load (filename = 'config.yml')
@@ -142,7 +168,7 @@ class Server < OpenStruct
   def update_monit
     puts 'Creating monit configuration...'
     replace_file monit_conf do |f|
-      f.puts %Q(# Automagically generated config)
+      f.puts %Q(# Automagically generated Monit config)
       # Let Monit reload itself if this configuration changes
       f.puts %Q(check file monit_conf with path #{File.expand_path(monit_conf)})
       f.puts %Q(  if changed checksum then exec "#{monit_reload}")
@@ -157,7 +183,13 @@ class Server < OpenStruct
   def update_nginx
     puts 'Creating nginx configuration...'
     replace_file nginx_conf do |f|
-      f.puts %Q(# Automagically generated config)
+      f.puts "# Automagically generated Nginx config"
+      # The default server always responds with 403 Forbidden
+      f.puts "server {"
+      f.puts "  listen 80 default;"
+      f.puts "  server_name _;"
+      f.puts "  deny all;"
+      f.puts "}"
       # Add application-specific Nginx configuration
       apps.each { |app| app.write_nginx_config(f) }
     end
