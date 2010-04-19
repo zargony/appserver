@@ -57,6 +57,14 @@
 # configured as a subdomain of this domain
 #domain: <system's domainname>
 
+# Path where public static files should be served from. Defaults to the public
+# directory in the application
+#public_dir: public
+
+# Path/name of the logfile for request logging. Defaults to log/access.log
+# in the application
+#access_log: log/access.log
+
 #
 # Application settings
 #
@@ -91,4 +99,10 @@
 #     # The hostname that this application should receive requests for.
 #     # Defaults to <appname>.<domain>
 #     hostname: blog.example.com
+#
+#     # Request logging
+#     access_log: /var/log/blog/access.log
+#
+#     # Serve files from the directory named 'static'
+#     public_dir: static
 #
