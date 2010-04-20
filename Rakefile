@@ -16,6 +16,14 @@ def rake_self
   "#{$0} -f #{File.expand_path(__FILE__)}"
 end
 
+def replace_file (filename)
+  tempfile = Tempfile.new(['_', File.basename(filename)], File.dirname(filename))
+  yield tempfile
+  tempfile.close
+  File.unlink(filename) if File.exist?(filename)
+  File.rename(tempfile, filename)
+end
+
 class Repository
   attr_reader :server, :path, :name
 
@@ -243,16 +251,6 @@ class Server < OpenStruct
       # Add application-specific Nginx configuration
       apps.each { |app| app.write_nginx_config(f) }
     end
-  end
-
-protected
-
-  def replace_file (filename)
-    tempfile = Tempfile.new(['_', File.basename(filename)], File.dirname(filename))
-    yield tempfile
-    tempfile.close
-    File.unlink(filename) if File.exist?(filename)
-    File.rename(tempfile, filename)
   end
 end
 
