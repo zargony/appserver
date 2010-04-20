@@ -30,6 +30,27 @@ class Repository
   def initialize (server, path)
     @server, @path, @name = server, path, File.basename(path, '.git')
   end
+
+  def post_receive_hook
+    File.join(path, 'hooks', 'post-receive')
+  end
+
+  def install_hook
+    deploy_cmd = "#{rake_self} deploy APP_NAME=#{name}"
+    if !File.exist?(post_receive_hook) || !File.executable?(post_receive_hook)
+      puts "Installing git post-receive hook to #{name}.git..."
+      replace_file(post_receive_hook) do |f|
+        f.puts '#!/bin/sh'
+        f.puts deploy_cmd
+        f.chown File.stat(path).uid, File.stat(path).gid
+        f.chmod 0755
+      end
+    elsif !File.readlines(post_receive_hook).any? { |line| line =~ /^#{Regexp.escape(rake_self)}/ }
+      puts "Couldn't install post-receive hook. Foreign hook script already present in #{name}.git!"
+    else
+      #puts "Hook already installed in #{name}.git"
+    end
+  end
 end
 
 class App < OpenStruct
@@ -200,27 +221,8 @@ class Server < OpenStruct
     apps.find { |app| app.name == name }
   end
 
-  def install_git_hooks
-    raise 'Path to git repositories not set and no user "git" present' unless git_dir
-    raise "Path to git repositories (#{git_dir}) does not exist" unless Dir.exist?(git_dir)
-    Dir.glob(File.expand_path('*.git', git_dir)).each do |repo|
-      name = File.basename(repo, '.git')
-      cmd = "#{rake_self} deploy APP_NAME=#{name}"
-      hook = File.join(repo, 'hooks', 'post-receive')
-      if !File.exist?(hook) || !File.executable?(hook)
-        puts "Installing git post-receive hook to #{name}.git..."
-        replace_file(hook) do |f|
-          f.puts '#!/bin/sh'
-          f.puts cmd
-          f.chown File.stat(repo).uid, File.stat(repo).gid
-          f.chmod 0755
-        end
-      elsif !File.readlines(hook).any? { |line| line =~ /^#{Regexp.escape(rake_self)}/ }
-        puts "Couldn't install post-receive hook. Foreign hook script already present in #{name}.git!"
-      else
-        #puts "Hook already installed in #{name}.git"
-      end
-    end
+  def install_hooks
+    repos.each { |repo| repo.install_hook }
   end
 
   def update_monit
@@ -260,7 +262,7 @@ task :default => :update
 
 desc 'Install post-receive hook into git repositories, that automatically deploy every time you push to a repository'
 task :install => [ :git ]
-task :git do |t| server.install_git_hooks; end
+task :git do |t| server.install_hooks; end
 
 desc 'Update server configs for monit and nginx'
 task :update => [ :monit, :nginx ]
