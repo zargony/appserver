@@ -12,6 +12,10 @@ class Hash
   end
 end
 
+def rake_self
+  "#{$0} -f #{File.expand_path(__FILE__)}"
+end
+
 class App < OpenStruct
   attr_reader :server
 
@@ -55,8 +59,8 @@ class App < OpenStruct
       cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
       (0...instances).each do |i|
         f.puts %Q(check process #{name}_#{i} with pidfile #{pidfile(i)})
-        f.puts %Q(  start program = "#{$0} -f #{File.expand_path(__FILE__)} start APP_NAME=#{name} APP_INSTANCE=#{i}")
-        f.puts %Q(  stop program = "#{$0} -f #{File.expand_path(__FILE__)} stop APP_NAME=#{name} APP_INSTANCE=#{i}")
+        f.puts %Q(  start program = "#{rake_self} start APP_NAME=#{name} APP_INSTANCE=#{i}")
+        f.puts %Q(  stop program = "#{rake_self} stop APP_NAME=#{name} APP_INSTANCE=#{i}")
         f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
         f.puts %Q(  if failed unixsocket #{socket(i)} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
