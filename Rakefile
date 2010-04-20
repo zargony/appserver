@@ -16,6 +16,14 @@ def rake_self
   "#{$0} -f #{File.expand_path(__FILE__)}"
 end
 
+class Repository
+  attr_reader :server, :path, :name
+
+  def initialize (server, path)
+    @server, @path, @name = server, path, File.basename(path, '.git')
+  end
+end
+
 class App < OpenStruct
   attr_reader :server
 
@@ -160,6 +168,18 @@ class Server < OpenStruct
     config = DEFAULTS.merge((config || {}).symbolize_keys!)
     @app_settings = config.delete(:apps) || {}
     super(config)
+  end
+
+  def repos
+    @repos ||= begin
+      raise 'Path to git repositories not set and no user "git" present' unless git_dir
+      raise "Path to git repositories (#{git_dir}) does not exist" unless Dir.exist?(git_dir)
+      Dir.glob(File.expand_path('*.git', git_dir)).map { |path| Repository.new(self, path) }
+    end
+  end
+
+  def repo (name)
+    repos.find { |repo| repo.name == name }
   end
 
   def apps
