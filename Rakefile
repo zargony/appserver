@@ -158,14 +158,15 @@ class Server < OpenStruct
 
   def initialize (config)
     config = DEFAULTS.merge((config || {}).symbolize_keys!)
-    appconfigs = config.delete(:apps) || {}
+    @app_settings = config.delete(:apps) || {}
     super(config)
-    @apps = appconfigs.inject([]) do |memo, (name, settings)|
+  end
+
+  def apps
+    @apps ||= @app_settings.inject([]) do |memo, (name, settings)|
       memo << App.new(self, name, settings)
     end
   end
-
-  attr_reader :apps
 
   def app (name)
     apps.find { |app| app.name == name }
