@@ -1,4 +1,5 @@
 require 'ostruct'
+require 'etc'
 require 'tempfile'
 require 'yaml'
 
@@ -126,6 +127,7 @@ end
 
 class Server < OpenStruct
   DEFAULTS = {
+    :git_dir => (Etc.getpwnam('git') rescue {})[:dir],
     :monit_conf => 'monitrc',
     :monit_reload => '/usr/sbin/monit reload',
     :nginx_conf => 'nginx.conf',
@@ -165,8 +167,17 @@ class Server < OpenStruct
     apps.find { |app| app.name == name }
   end
 
+  def install_git_hooks
+    raise 'Path to git repositories not set and no user "git" present' unless git_dir
+    raise "Path to git repositories (#{git_dir}) does not exist" unless Dir.exist?(git_dir)
+    Dir.glob(File.expand_path('*.git', git_dir)).each do |repo|
+      name = File.basename(repo, '.git')
+      # TODO ...
+    end
+  end
+
   def update_monit
-    puts 'Creating monit configuration...'
+    puts 'Updating monit configuration...'
     replace_file monit_conf do |f|
       f.puts %Q(# Automagically generated Monit config)
       # Let Monit reload itself if this configuration changes
@@ -181,7 +192,7 @@ class Server < OpenStruct
   end
 
   def update_nginx
-    puts 'Creating nginx configuration...'
+    puts 'Updating nginx configuration...'
     replace_file nginx_conf do |f|
       f.puts "# Automagically generated Nginx config"
       # The default server always responds with 403 Forbidden
@@ -208,7 +219,14 @@ end
 
 server = Server.load
 
-task :default => [ :monit, :nginx ]
+task :default => :update
+
+desc 'Install post-receive hook into git repositories, that automatically deploy every time you push to a repository'
+task :install => [ :git ]
+task :git do |t| server.install_git_hooks; end
+
+desc 'Update server configs for monit and nginx'
+task :update => [ :monit, :nginx ]
 task :monit do |t| server.update_monit; end
 task :nginx do |t| server.update_nginx; end
 
