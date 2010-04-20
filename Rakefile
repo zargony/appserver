@@ -176,7 +176,21 @@ class Server < OpenStruct
     raise "Path to git repositories (#{git_dir}) does not exist" unless Dir.exist?(git_dir)
     Dir.glob(File.expand_path('*.git', git_dir)).each do |repo|
       name = File.basename(repo, '.git')
-      # TODO ...
+      cmd = "#{rake_self} deploy APP_NAME=#{name}"
+      hook = File.join(repo, 'hooks', 'post-receive')
+      if !File.exist?(hook) || !File.executable?(hook)
+        puts "Installing git post-receive hook to #{name}.git..."
+        replace_file(hook) do |f|
+          f.puts '#!/bin/sh'
+          f.puts cmd
+          f.chown File.stat(repo).uid, File.stat(repo).gid
+          f.chmod 0755
+        end
+      elsif !File.readlines(hook).any? { |line| line =~ /^#{Regexp.escape(rake_self)}/ }
+        puts "Couldn't install post-receive hook. Foreign hook script already present in #{name}.git!"
+      else
+        #puts "Hook already installed in #{name}.git"
+      end
     end
   end
 
