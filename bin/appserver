@@ -24,7 +24,7 @@ ARGV.options do |opts|
   opts.separator ''
   opts.separator 'Options:'
   opts.on '-d', '--dir PATH', 'Specifies the server directory to use', 'instead of the current working directory' do |dir|
-    options[:server_dir] = dir
+    options[:dir] = dir
   end
   opts.separator ''
   opts.separator 'Common options:'
