@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+$:.unshift File.dirname(__FILE__) + "/../lib"
+
+require 'optparse'
+require 'appserver'
+
+options = {}
+ARGV.options do |opts|
+  opts.banner = 'Usage: appserver [options] <command> [arguments]'
+  opts.separator ''
+  opts.separator 'appserver [options] init'
+  opts.separator '    Initializes a server directory. This command creates a configuration file'
+  opts.separator '    (appserver.yml), which makes the directory usable for deploying'
+  opts.separator '    applications to. By default, the current directory is used.'
+  opts.separator ''
+  opts.separator 'appserver [options] deploy <git-repository>'
+  opts.separator '    Deploys an application to the server directory and updates configuration'
+  opts.separator '    files. Additionally, a hook is installed to the git repository, that'
+  opts.separator '    auto-deploys the application from now on, if sombody pushes to it'
+  opts.separator ''
+  opts.separator 'appserver [options] update'
+  opts.separator '    Updates all generated configuration files'
+  opts.separator ''
+  opts.separator 'Options:'
+  opts.on '-d', '--dir PATH', 'Specifies the server directory to use', 'instead of the current working directory' do |dir|
+    options[:server_dir] = dir
+  end
+  opts.separator ''
+  opts.separator 'Common options:'
+  opts.on '-h', '--help', 'Show this message' do
+    puts opts; exit
+  end
+  opts.separator ''
+  opts.separator 'See http://github.com/zargony/appserver for more information'
+  opts.separator ''
+end
+
+args = ARGV.parse!
+(puts ARGV.options; exit) if args.size < 1
+Appserver::Command.run!(args.shift, args, options)
