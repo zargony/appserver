@@ -25,11 +25,14 @@ module Appserver
 
     attr_reader :dir
 
+    def config_file
+      File.join(dir, 'appserver.yml')
+    end
+
     def initialize (options = {})
       settings = DEFAULTS
       # Load configuration from given server directory, fall back to the current directory
       @dir = options.delete(:dir) || Dir.pwd
-      config_file = File.join(@dir, 'appserver.yml')
       if File.exist?(config_file)
         settings.merge!(YAML.load_file(config_file).symbolize_keys!)
         @dir_initialized = true
