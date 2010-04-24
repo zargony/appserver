@@ -12,10 +12,11 @@ module Appserver
     end
 
     def run!
+      server = Server.new(@options)
       case @command.to_sym
         when :init
-          # TODO
-          raise 'Command not implemented yet'
+          server.initialize_dir
+          puts "Wrote #{server.config_file}"
 
         when :deploy
           # TODO
