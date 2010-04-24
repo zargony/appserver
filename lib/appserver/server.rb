@@ -4,8 +4,8 @@ require 'yaml'
 
 module Appserver
   class Server < OpenStruct
-    class AlreadyInitializedError < RuntimeError
-    end
+    class AlreadyInitializedError < RuntimeError; end
+    class NotInitialized < RuntimeError; end
 
     DEFAULTS = {
       :repo_dir => (Etc.getpwnam('git') rescue {})[:dir],

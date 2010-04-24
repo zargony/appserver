@@ -1,6 +1,5 @@
 module Appserver
-  class UnknownCommandError < RuntimeError
-  end
+  class UnknownCommandError < RuntimeError; end
 
   class Command
     def self.run! (command, arguments, options = {})
