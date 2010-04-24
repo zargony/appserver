@@ -23,8 +23,8 @@ module Appserver
           raise 'Command not implemented yet'
 
         when :update
-          # TODO
-          raise 'Command not implemented yet'
+          server.write_configs
+          puts 'Wrote configuration files'
 
         else
           raise UnknownCommandError
