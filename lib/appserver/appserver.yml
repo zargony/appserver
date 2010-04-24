@@ -1,29 +1,38 @@
-#
 # This is a server directory configuration of the "appserver" gem. Use the
 # "appserver" command or visit http://github.com/zargony/appserver for details
-#
 
 #
-# Global settings
+# SERVER SETTINGS
+# Non application specific. Paths are relative to the server directory. The
+# server directory is the directory, that contains this configuration file.
 #
 
 # Path to the default directory of git repositories that contain the
 # applications to deploy. Defaults to the home directory of the user 'git'
 #git_dir: /var/git
 
-# Name of the monit configuration file that should be written
+# Name of the Monit configuration snippet that should be written
 #monit_conf: monitrc
 
-# Command to execute to tell monit to reload the configuration. Used within
-# the monit configuration, so this command will be called as root
+# Command to execute to tell Monit to reload the configuration. Used within
+# the Monit snippet, so this command will be called as root
 #monit_reload: /usr/sbin/monit reload
 
-# Name of the nginx configuration file that should be written
+# Name of the nginx configuration snippet that should be written
 #nginx_conf: nginx.conf
 
 # Command to execute to tell nginx to reload the configuration. Used within
-# the monit configuration, so this command will be called as root
+# the Monit snippet, so this command will be called as root
 #nginx_reload: /usr/sbin/nginx -s reload
+
+
+#
+# APPLICATION SETTINGS
+# Can be either specified globally for all applications or application-
+# specific under the "apps" subtree. Paths are relative to the respective
+# application directory. Every deployed application has it's own directory
+# under the server directory.
+#
 
 # Path to thin. If you installed thin using Rubygems, you probably want to
 # adjust this
@@ -64,9 +73,11 @@
 # to 0 to disable
 #http_check_timeout: 30
 
-# If no explicit hostname is specified for an application, it'll be
-# configured as a subdomain of this domain
-#domain: <system's domainname>
+# The hostname, Nginx should accept requests for. You most porbably want to
+# specify the hostname for every application below. If an application has no
+# hostname set, a subdomain of this default hostname will be used. Defaults
+# to the system's domainname.
+#hostname: example.com
 
 # Path where public static files should be served from. Defaults to the public
 # directory in the application
@@ -76,44 +87,16 @@
 # in the application
 #access_log: log/access.log
 
+
 #
-# Application settings
+# APPLICATIONS
+# All application default settings from above can be overridden for every
+# application. You most probably want to set "hostname" to your liking here.
+# Most other settings should do well with their defaults in most cases.
 #
 
-# Every application must be listed under 'apps' with a unique key and a
-# hash of settings. All settings are optional.
-#
-# apps:
-#   # A simple application using default settings
-#   mypage: {}
-#
-#   # An application with totally customized settings
-#   blog:
-#     # A custom thin using a different Ruby and running in beta environment
-#     thin: /usr/local/rvm/gems/ree-1.8.7-2010.02/bin/thin
-#     thin_opts: -e beta
-#
-#     # The number of application instances to keep running
-#     instances: 5
-#
-#     # Custom paths
-#     pids_dir: /tmp/blogapp
-#     sockets_dir: /tmp/blogapp
-#     server_log: /var/log/blog.log
-#
-#     # Custom resource checks
-#     max_cpu_usage: 80%
-#     max_memory_usage: 200 Mb
-#     usage_check_cycles: 5
-#     http_check_timeout: 20
-#
-#     # The hostname that this application should receive requests for.
-#     # Defaults to <appname>.<domain>
-#     hostname: blog.example.com
-#
-#     # Request logging
-#     access_log: /var/log/blog/access.log
-#
-#     # Serve files from the directory named 'static'
-#     public_dir: static
-#
+#apps:
+#  # A simple blog application named "myblog"
+#  myblog:
+#    hostname: blog.example.com
+#    instances: 1
