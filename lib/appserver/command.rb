@@ -15,7 +15,9 @@ module Appserver
       case @command.to_sym
         when :init
           server.initialize_dir
-          puts "Wrote #{server.config_file}"
+          server.write_configs
+          puts 'Initialized and wrote configuration files. You should now include the'
+          puts 'Monit and Nginx configs into your system and deploy an application.'
 
         when :deploy
           # TODO
@@ -23,7 +25,7 @@ module Appserver
 
         when :update
           server.write_configs
-          puts 'Wrote configuration files'
+          puts 'Wrote configuration files.'
 
         else
           raise UnknownCommandError
