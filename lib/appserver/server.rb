@@ -1,4 +1,5 @@
 require 'ostruct'
+require 'etc'
 require 'yaml'
 
 module Appserver
