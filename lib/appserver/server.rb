@@ -34,7 +34,8 @@ module Appserver
       # Load configuration from given server directory, fall back to the current directory
       @dir = options.delete(:dir) || Dir.pwd
       if File.exist?(config_file)
-        settings.merge!(YAML.load_file(config_file).symbolize_keys!)
+        config_settings = YAML.load_file(config_file)
+        settings.merge!((config_settings || {}).symbolize_keys!)
         @dir_initialized = true
       end
       # Let command line options override any settings
