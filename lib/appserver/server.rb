@@ -64,8 +64,12 @@ module Appserver
     end
 
     def apps
-      # TODO ...
-      []
+      @app_names ||= Dir.glob(File.join(dir, '*')).select { |f| File.directory?(f) }.map { |f| File.basename(f) }
+      @apps ||= @app_names.map do |name|
+        settings = super && super[name]
+        App.new(self, name, settings)
+      end
+      @apps
     end
 
     def write_configs
