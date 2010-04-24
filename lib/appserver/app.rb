@@ -90,7 +90,7 @@ module Appserver
       if rack?
         f.puts "upstream #{name}_cluster {"
         (0...instances).each do |i|
-          f.puts "  server unix:#{File.expand_path(socket(i))};"
+          f.puts "  server unix:#{File.expand_path(socket(i))} fail_timeout=0;"
         end
         f.puts "}"
         f.puts "server {"
