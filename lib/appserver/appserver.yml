@@ -1,24 +1,28 @@
 #
+# This is a server directory configuration of the "appserver" gem. Use the
+# "appserver" command or visit http://github.com/zargony/appserver for details
+#
+
+#
 # Global settings
 #
 
-# Path to a directory, where the git repositories (*.git subdirs) reside,
-# that contain the applications to deploy. Use "rake install" to install a
-# post-receive hook to these repositories, that automatically deploys an
-# application, when something is pushed to the repository. Defaults to the
-# home directory of the user 'git'
+# Path to the default directory of git repositories that contain the
+# applications to deploy. Defaults to the home directory of the user 'git'
 #git_dir: /var/git
 
 # Name of the monit configuration file that should be written
 #monit_conf: monitrc
 
-# Command to execute to tell monit to reload the configuration
+# Command to execute to tell monit to reload the configuration. Used within
+# the monit configuration, so this command will be called as root
 #monit_reload: /usr/sbin/monit reload
 
 # Name of the nginx configuration file that should be written
 #nginx_conf: nginx.conf
 
-# Command to execute to tell nginx to reload the configuration
+# Command to execute to tell nginx to reload the configuration. Used within
+# the monit configuration, so this command will be called as root
 #nginx_reload: /usr/sbin/nginx -s reload
 
 # Path to thin. If you installed thin using Rubygems, you probably want to

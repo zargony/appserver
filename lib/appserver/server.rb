@@ -1,7 +1,11 @@
 require 'ostruct'
+require 'yaml'
 
 module Appserver
   class Server < OpenStruct
+    class AlreadyInitializedError < RuntimeError
+    end
+
     DEFAULTS = {
       :repo_dir => (Etc.getpwnam('git') rescue {})[:dir],
       :monit_conf => 'monitrc',
@@ -29,6 +33,10 @@ module Appserver
       File.join(dir, 'appserver.yml')
     end
 
+    def config_file_template
+      File.expand_path('../appserver.yml', __FILE__)
+    end
+
     def initialize (options = {})
       settings = DEFAULTS
       # Load configuration from given server directory, fall back to the current directory
@@ -45,6 +53,13 @@ module Appserver
 
     def dir_initialized?
       @dir_initialized
+    end
+
+    def initialize_dir
+      raise AlreadyInitializedError if File.exist?(config_file)
+      File.safe_replace(config_file) do |f|
+        f.puts IO.read(config_file_template)
+      end
     end
   end
 end
