@@ -6,6 +6,8 @@ module Appserver
 
     def initialize (server, name, settings = {})
       @server = server
+      settings ||= {}
+      settings.symbolize_keys!
       settings[:name] = name
       # Pull in settings from the server if it wasn't set specifically for the application
       [:thin, :thin_opts, :instances, :pids_dir, :sockets_dir, :server_log, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout, :access_log, :public_dir].each do |key|
