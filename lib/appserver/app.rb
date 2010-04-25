@@ -58,42 +58,14 @@ module Appserver
         cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
         (0...instances).each do |i|
           f.puts %Q(check process #{name}_#{i} with pidfile #{File.expand_path(pidfile(i), dir)})
-          f.puts %Q(  start program = "#{File.expand_path($0)} -d #{File.expand_path(server.dir)} start_instance #{name} #{i}")
-          f.puts %Q(  stop program = "#{File.expand_path($0)} -d #{File.expand_path(server.dir)} stop_instance #{name} #{i}")
+          f.puts %Q(  start program = "TODO")
+          f.puts %Q(  stop program = "TODO")
           f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
           f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
           f.puts %Q(  if failed unixsocket #{File.expand_path(socket(i), dir)} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
           f.puts %Q(  if 5 restarts within 5 cycles then timeout)
           f.puts %Q(  group #{name})
         end
-      end
-    end
-
-    def instance_env
-      { 'APP_NAME' => name, 'GEM_HOME' => Gem.dir, 'GEM_PATH' => Gem.path.join(':') }
-    end
-
-    def change_privileges
-      target_uid, target_gid = File.stat(dir).uid, File.stat(dir).gid
-      if Process.euid != target_uid || Process.egid != target_gid
-        Process::GID.change_privilege(target_gid)
-        Process::UID.change_privilege(target_uid)
-      end
-    end
-
-    def start_instance (instance)
-      change_privileges
-      if rack?
-        exec(instance_env, "#{thin} -S #{socket(instance)} -R #{rack_config} -d -l #{server_log} -P #{pidfile(instance)} #{thin_opts} start", :unsetenv_others => true)
-      else
-        raise "Don't know how to start this type of instance"
-      end
-    end
-
-    def stop_instance (instance)
-      change_privileges
-      if rack?
-        exec(instance_env, "#{thin} -l #{server_log} -P #{pidfile(instance)} stop", :unsetenv_others => true)
       end
     end
 
