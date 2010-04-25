@@ -47,7 +47,7 @@ module Appserver
     def initialize_dir
       raise AlreadyInitializedError if dir_initialized?
       File.safe_replace(config_file) do |f|
-        f.puts IO.read(config_file_template)
+        f.puts File.read(config_file_template)
       end
     end
 
