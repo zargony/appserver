@@ -17,6 +17,7 @@ module Appserver
     attr_reader :dir
 
     def initialize (options = {})
+      super()
       # Get dir setting first, since it's needed for loading the config file
       @settings = options.symbolize_keys!
       @dir = @settings[:dir] || Dir.pwd
