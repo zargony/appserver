@@ -1,21 +1,34 @@
-require 'ostruct'
-
 module Appserver
-  class App < OpenStruct
-    attr_reader :server
+  class App < Struct.new(:thin, :thin_opts, :instances, :pids_dir, :sockets_dir, :server_log, :max_cpu_usage,
+                         :max_memory_usage, :usage_check_cycles, :http_check_timeout, :hostname, :access_log,
+                         :public_dir)
+    DEFAULTS = {
+      :thin => '/usr/local/bin/thin',
+      :thin_opts => '-e production',
+      :instances => 3,
+      :pids_dir => 'tmp/pids',
+      :sockets_dir => 'tmp/sockets',
+      :server_log => 'log/server.log',
+      :max_cpu_usage => nil,
+      :max_memory_usage => nil,
+      :usage_check_cycles => 5,
+      :http_check_timeout => 30,
+      :hostname => `/bin/hostname -f`.chomp.gsub(/^[^.]+\./, ''),
+      :access_log => 'log/access.log',
+      :public_dir => 'public',
+    }
+
+    attr_reader :server, :name
 
     def initialize (server, name, settings = {})
-      @server = server
-      settings ||= {}
-      settings.symbolize_keys!
-      settings[:name] = name
-      # Pull in settings from the server if it wasn't set specifically for the application
-      [:thin, :thin_opts, :instances, :pids_dir, :sockets_dir, :server_log, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout, :access_log, :public_dir].each do |key|
-        settings[key] ||= server.send(key)
+      super()
+      @server, @name = server, name
+      appsettings = ((settings[:apps] || {})[name] || {}).symbolize_keys!
+      members.each do |key|
+        self[key] = appsettings[key] || settings[key] || DEFAULTS[key]
       end
-      super(settings)
-      # Use a subdomain of the main domain if no hostname was given
-      self.hostname ||= "#{name}.#{server.domain}"
+      # Use a subdomain of the default hostname if no hostname was given specifically for this app
+      self.hostname = "#{name}.#{hostname}" unless appsettings[:hostname]
     end
 
     def dir
