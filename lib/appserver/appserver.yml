@@ -9,7 +9,7 @@
 
 # Path to the default directory of git repositories that contain the
 # applications to deploy. Defaults to the home directory of the user 'git'
-#git_dir: /var/git
+#repo_dir: /var/git
 
 # Name of the Monit configuration snippet that should be written
 #monit_conf: monitrc
