@@ -12,12 +12,14 @@ module Appserver
 
     def run!
       server = Server.new(@options)
+
       case @command.to_sym
         when :init
           server.initialize_dir
+          puts 'Initialized server directory by creating appserver.yml.'
           server.write_configs
-          puts 'Initialized and wrote configuration files. You should now include the'
-          puts 'Monit and Nginx configs into your system and deploy an application.'
+          puts 'Wrote Monit and Nginx configuration snippets. Make sure to include them into'
+          puts 'your system\'s Monit and Nginx configuration to become active.'
 
         when :deploy
           # TODO
@@ -25,7 +27,7 @@ module Appserver
 
         when :update
           server.write_configs
-          puts 'Wrote configuration files.'
+          puts 'Wrote Monit and Nginx configuration snippets.'
 
         else
           raise UnknownCommandError
