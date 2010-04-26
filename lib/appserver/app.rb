@@ -1,10 +1,10 @@
 module Appserver
-  class App < Struct.new(:thin, :thin_opts, :instances, :pids_dir, :sockets_dir, :server_log, :max_cpu_usage,
+  class App < Struct.new(:unicorn, :environment, :instances, :pids_dir, :sockets_dir, :server_log, :max_cpu_usage,
                          :max_memory_usage, :usage_check_cycles, :http_check_timeout, :hostname, :access_log,
                          :public_dir)
     DEFAULTS = {
-      :thin => '/usr/local/bin/thin',
-      :thin_opts => '-e production',
+      :unicorn => '/usr/local/bin/unicorn',
+      :environment => 'production',
       :instances => 3,
       :pids_dir => 'tmp/pids',
       :sockets_dir => 'tmp/sockets',
@@ -43,12 +43,16 @@ module Appserver
       File.exist?(rack_config)
     end
 
-    def pidfile (instance)
-      File.join(pids_dir, "#{name}_#{instance.to_i}.pid")
+    def unicorn_config
+      File.expand_path('../unicorn.conf.rb', __FILE__)
     end
 
-    def socket (instance)
-      File.join(sockets_dir, "#{name}_#{instance.to_i}.socket")
+    def pidfile
+      File.join(pids_dir, 'unicorn.pid')
+    end
+
+    def socket
+      File.join(sockets_dir, 'unicorn.socket')
     end
 
     def write_monit_config (f)
@@ -56,16 +60,14 @@ module Appserver
       f.puts %Q(# Application: #{name})
       if rack?
         cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
-        (0...instances).each do |i|
-          f.puts %Q(check process #{name}_#{i} with pidfile #{File.expand_path(pidfile(i), dir)})
-          f.puts %Q(  start program = "TODO")
-          f.puts %Q(  stop program = "TODO")
-          f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
-          f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
-          f.puts %Q(  if failed unixsocket #{File.expand_path(socket(i), dir)} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
-          f.puts %Q(  if 5 restarts within 5 cycles then timeout)
-          f.puts %Q(  group #{name})
-        end
+        f.puts %Q(check process #{name} with pidfile #{File.expand_path(pidfile, dir)})
+        f.puts %Q(  start program = "#{unicorn} -E #{environment} -Dc #{unicorn_config} #{rack_config}")
+        f.puts %Q(  stop program = "/bin/kill `cat #{File.expand_path(pidfile, dir)}`")
+        f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
+        f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
+        f.puts %Q(  if failed unixsocket #{File.expand_path(socket, dir)} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
+        f.puts %Q(  if 5 restarts within 5 cycles then timeout)
+        f.puts %Q(  group #{name})
       end
     end
 
@@ -74,9 +76,7 @@ module Appserver
       f.puts "# Application: #{name}"
       if rack?
         f.puts "upstream #{name}_cluster {"
-        (0...instances).each do |i|
-          f.puts "  server unix:#{File.expand_path(socket(i))} fail_timeout=0;"
-        end
+        f.puts "  server unix:#{File.expand_path(socket)} fail_timeout=0;"
         f.puts "}"
         f.puts "server {"
         f.puts "  listen 80;"
