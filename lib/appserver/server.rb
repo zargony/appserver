@@ -16,11 +16,11 @@ module Appserver
 
     attr_reader :dir
 
-    def initialize (options = {})
+    def initialize (dir, options = {})
       super()
-      # Get dir setting first, since it's needed for loading the config file
+      # Set dir first, since it's needed for loading the config file
+      @dir = dir
       @settings = options.symbolize_keys!
-      @dir = @settings[:dir] || Dir.pwd
       # Load config file if exist
       if dir_initialized?
         config = (YAML.load_file(config_file) || {}).symbolize_keys!
