@@ -11,7 +11,7 @@ module Appserver
     end
 
     def run!
-      server = Server.new(@options)
+      server = Server.new(@options.delete(:dir) || Dir.pwd, @options)
 
       case @command.to_sym
         when :init
