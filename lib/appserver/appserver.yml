@@ -34,12 +34,11 @@
 # under the server directory.
 #
 
-# Path to thin. If you installed thin using Rubygems, you probably want to
-# adjust this
-#thin: /usr/local/bin/thin
+# Path to unicorn
+#unicorn: /usr/local/bin/unicorn
 
-# Extra options passed to thin
-#thin_opts: -e production
+# Environment to run the application in. Defaults to 'production'
+#environment: production
 
 # Default number of application instances
 #instances: 3
