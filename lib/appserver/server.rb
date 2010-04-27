@@ -28,8 +28,8 @@ module Appserver
       end
     end
 
-    def self.initialize_dir
-      raise AlreadyInitializedError if search_dir
+    def self.initialize_dir (options = {})
+      raise AlreadyInitializedError if search_dir && !options[:force]
       File.safe_replace('appserver.yml') do |f|
         f.puts File.read(config_file_template)
       end
