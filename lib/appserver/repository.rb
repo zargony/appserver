@@ -25,7 +25,7 @@ module Appserver
       deploy_cmd = "#{File.expand_path($0)} -d #{File.expand_path(server.dir)} deploy #{File.expand_path(path)}"
       if !File.exist?(post_receive_hook) || !File.executable?(post_receive_hook)
         puts "Installing git post-receive hook to repository #{path}..."
-        File.safe_replace(post_receive_hook) do |f|
+        server.safe_replace_file(post_receive_hook) do |f|
           f.puts '#!/bin/sh'
           f.puts deploy_cmd
           f.chown File.stat(path).uid, File.stat(path).gid
