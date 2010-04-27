@@ -29,20 +29,35 @@ Setup
 To run applications, you need to initialize a server directory first. To do
 so, create an empty directory and run `appserver init` in it. 
 
-    mkdir /opt/webapps
-    cd /var/webapps
-    appserver init
+    $ mkdir /var/webapps
+    $ cd /var/webapps
+    $ appserver init
 
 A server directory holds configuration files and applications in
 subdirectories. You can customize things by editing the `appserver.yml`
-configuration. Every other file/directory is updated automatically and should
-not be modified manually.
+configuration. **Any other file/directory is updated automatically and should
+not be modified manually.**
 
-Modify your system's Monit configuration (`/etc/monit/monitrc`) to include
-the generated `monitrc` at the bottom and reload Monit.
+Modify your system's Monit configuration (e.g. `/etc/monit/monitrc` on Ubuntu)
+to include the generated `monitrc` at the bottom and reload Monit.
 
-Modify your system's Nginx configuration (`/etc/nginx/nginx.conf`) to include
-the generated `nginx.conf` inside a `http` statement and reload Nginx.
+*/etc/monit/monitrc:*
+
+    ⋮
+    include /var/webapps/monitrc
+
+Modify your system's Nginx configuration (e.g. `/etc/nginx/nginx.conf` on
+Ubuntu) to include the generated `nginx.conf` **inside a `http` statement**
+and reload Nginx.
+
+*/etc/nginx/nginx.conf:*
+
+    ⋮
+    http {
+      ⋮
+      include /var/www/nginx.conf;
+    }
+    ⋮
 
 Deploying an application
 ------------------------
