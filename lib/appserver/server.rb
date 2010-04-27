@@ -56,29 +56,23 @@ module Appserver
       File.join(dir, 'appserver.yml')
     end
 
-    def apps
-      @apps ||= begin
-        Dir.glob(File.join(dir, '*')).select { |f| File.directory?(f) }.map { |f| File.basename(f) }.map do |name|
-          App.new(self, name, @config)
-        end
-      end
-    end
-
     def app (name)
-      (@apps || []).find { |app| app.name == name } || App.new(self, name, @config)
+      @apps ||= {}
+      @apps[name] ||= App.new(self, name, @config)
     end
 
-    def repositories
-      @repositories ||= begin
-        Dir.glob(File.join(repo_dir, '*.git')).select { |f| File.directory?(f) }.map do |path|
-          Repository.new(self, path)
-        end
-      end
+    def apps
+      Dir.glob(File.join(dir, '*')).select { |f| File.directory?(f) }.map { |f| File.basename(f) }.map { |name| app(name) }
     end
 
     def repository (name_or_path)
-      path = name_or_path =~ %r(/) ? name_or_path : File.join(repo_dir, "#{name_or_path}.git")
-      (@repositories || []).find { |repo| File.expand_path(repo.path) == File.expand_path(path) } || Repository.new(self, path)
+      path = name_or_path =~ %r(/) ? expand_path(name_or_path) : File.expand_path("#{name_or_path}.git", repo_dir)
+      @repositories ||= {}
+      @repositories[path] ||= Repository.new(self, path, @config)
+    end
+
+    def repositories
+      Dir.glob(File.join(repo_dir, '*.git')).select { |f| File.directory?(f) }.map { |path| repository(path) }
     end
 
     def write_configs

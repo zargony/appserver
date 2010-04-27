@@ -6,7 +6,7 @@ module Appserver
 
     attr_reader :server, :path
 
-    def initialize (server, path)
+    def initialize (server, path, config)
       @server, @path = server, path.chomp('/')
     end
 
