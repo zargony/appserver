@@ -4,6 +4,7 @@ require 'yaml'
 module Appserver
   class Server < Struct.new(:dir, :repo_dir, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload)
     class AlreadyInitializedError < RuntimeError; end
+    class DirectoryNotEmptyError < RuntimeError; end
     class NotInitializedError < RuntimeError; end
 
     DEFAULTS = {
@@ -30,6 +31,7 @@ module Appserver
 
     def self.initialize_dir (options = {})
       raise AlreadyInitializedError if search_dir && !options[:force]
+      raise DirectoryNotEmptyError if Dir.glob('*') != [] && !options[:force]
       File.safe_replace('appserver.yml') do |f|
         f.puts File.read(config_file_template)
       end
