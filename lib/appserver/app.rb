@@ -23,7 +23,7 @@ module Appserver
     def initialize (server, name, settings = {})
       super()
       @server, @name = server, name
-      appsettings = ((settings[:apps] || {})[name] || {}).symbolize_keys!
+      appsettings = (settings[:apps] || {})[name.to_sym] || {}
       members.each do |key|
         self[key] = appsettings[key] || settings[key] || DEFAULTS[key]
       end

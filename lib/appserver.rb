@@ -5,5 +5,3 @@ module Appserver
   autoload :App,        "#{ROOT}/appserver/app"
   autoload :Repository, "#{ROOT}/appserver/repository"
 end
-
-require "#{Appserver::ROOT}/appserver/core_ext"
