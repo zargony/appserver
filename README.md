@@ -59,7 +59,7 @@ Author
 
 Andreas Neuhaus :: <http://zargony.com/>
 
-[repo]: http://github.com/zargony/appserver-config/
+[repo]: http://github.com/zargony/appserver/
 [monit]: http://mmonit.com/monit/
 [nginx]: http://nginx.com/
 [unicorn]: http://unicorn.bogomips.org/
