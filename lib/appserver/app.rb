@@ -82,7 +82,7 @@ module Appserver
         f.puts "  listen 80;"
         f.puts "  server_name #{hostname};"
         f.puts "  root #{File.expand_path(public_dir, dir)};"
-        f.puts "  access_log #{File.expand_path(access_log)};"
+        f.puts "  access_log #{File.expand_path(access_log, dir)};"
         f.puts "  location / {"
         f.puts "    proxy_set_header X-Real-IP $remote_addr;"
         f.puts "    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
