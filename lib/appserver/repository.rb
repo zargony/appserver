@@ -1,13 +1,12 @@
 module Appserver
-  class Repository
+  class Repository < Struct.new(:server, :path)
     class InvalidRepositoryError < RuntimeError; end
 
     include Utils
 
-    attr_reader :server, :path
-
     def initialize (server, path, config)
-      @server, @path = server, path.chomp('/')
+      self.server, self.path = server, path.chomp('/')
+      raise InvalidRepositoryError unless valid?
     end
 
     def name
@@ -23,7 +22,6 @@ module Appserver
     end
 
     def install_hook
-      raise InvalidRepositoryError unless valid?
       deploy_cmd = "#{File.expand_path($0)} -d #{File.expand_path(server.dir)} deploy #{File.expand_path(path)}"
       if !File.exist?(post_receive_hook) || !File.executable?(post_receive_hook)
         puts "Installing git post-receive hook to repository #{path}..."

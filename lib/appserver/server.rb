@@ -1,6 +1,5 @@
 require 'etc'
 require 'yaml'
-require 'tempfile'
 
 module Appserver
   class Server < Struct.new(:dir, :repo_dir, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload)
