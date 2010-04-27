@@ -7,7 +7,7 @@ require 'appserver'
 
 options = {}
 opts = OptionParser.new(nil, 20, '  ') do |opts|
-  opts.banner = 'Usage: appserver [options] <command> [arguments]'
+  opts.banner = 'Usage: appserver [options] init|deploy|update [arguments]'
   opts.separator ''
   opts.separator 'appserver [options] init'
   opts.separator '  Initializes a server directory. This command creates a configuration file'
