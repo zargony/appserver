@@ -1,27 +1,27 @@
-# This is a server directory configuration of the "appserver" gem. Use the
+# This is an appserver directory configuration of the "appserver" gem. Use the
 # "appserver" command or visit http://github.com/zargony/appserver for details
 
 #
 # SERVER SETTINGS
-# Non application specific. Paths are relative to the server directory. The
-# server directory is the directory, that contains this configuration file.
+# Non application specific. Paths are relative to the appserver directory. The
+# appserver directory is the directory, that contains this configuration file.
 #
 
 # Path to the default directory of git repositories that contain the
 # applications to deploy. Defaults to the home directory of the user 'git'
 #repo_dir: /var/git
 
-# Name of the Monit configuration snippet that should be written
+# Path/name of the Monit configuration snippet that should be written
 #monit_conf: monitrc
 
 # Command to execute to tell Monit to reload the configuration. Used within
 # the Monit snippet, so this command will be called as root
 #monit_reload: /usr/sbin/monit reload
 
-# Name of the nginx configuration snippet that should be written
+# Path/name of the Nginx configuration snippet that should be written
 #nginx_conf: nginx.conf
 
-# Command to execute to tell nginx to reload the configuration. Used within
+# Command to execute to tell Nginx to reload the configuration. Used within
 # the Monit snippet, so this command will be called as root
 #nginx_reload: /usr/sbin/nginx -s reload
 
@@ -29,18 +29,18 @@
 #
 # APPLICATION SETTINGS
 # Can be either specified globally for all applications or application-
-# specific under the "apps" subtree. Paths are relative to the respective
-# application directory. Every deployed application has it's own directory
-# under the server directory.
+# specific under the "apps" subtree (see examples at the bottom of this file).
+# Paths are relative to the respective application directory. Every deployed
+# application has it's own directory under the appserver directory.
 #
 
-# Path to unicorn
+# Name/path of unicorn
 #unicorn: /usr/local/bin/unicorn
 
 # Environment to run the application in. Defaults to 'production'
 #environment: production
 
-# Default number of application instances
+# Default number of application instances (unicorn workers)
 #instances: 3
 
 # Path where to store pid files of running instances. Defaults to the
