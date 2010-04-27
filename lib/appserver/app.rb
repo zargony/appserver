@@ -1,7 +1,7 @@
 module Appserver
-  class App < Struct.new(:unicorn, :environment, :instances, :pids_dir, :sockets_dir, :server_log, :max_cpu_usage,
-                         :max_memory_usage, :usage_check_cycles, :http_check_timeout, :hostname, :access_log,
-                         :public_dir)
+  class App < Struct.new(:server, :name, :unicorn, :environment, :instances, :pids_dir, :sockets_dir,
+                         :server_log, :max_cpu_usage, :max_memory_usage, :usage_check_cycles,
+                         :http_check_timeout, :hostname, :access_log, :public_dir)
     DEFAULTS = {
       :unicorn => '/usr/local/bin/unicorn',
       :environment => 'production',
@@ -18,17 +18,19 @@ module Appserver
       :public_dir => 'public',
     }
 
-    attr_reader :server, :name
+    def self.unicorn_config
+      File.expand_path('../unicorn.conf.rb', __FILE__)
+    end
 
-    def initialize (server, name, settings = {})
+    def initialize (server, name, config)
       super()
-      @server, @name = server, name
-      appsettings = (settings[:apps] || {})[name.to_sym] || {}
-      members.each do |key|
-        self[key] = appsettings[key] || settings[key] || DEFAULTS[key]
+      self.server, self.name = server, name
+      appconfig = (config[:apps] || {})[name.to_sym] || {}
+      DEFAULTS.each do |key, default_value|
+        self[key] = appconfig[key] || config[key] || default_value
       end
       # Use a subdomain of the default hostname if no hostname was given specifically for this app
-      self.hostname = "#{name}.#{hostname}" unless appsettings[:hostname]
+      self.hostname = "#{name}.#{hostname}" unless appconfig[:hostname]
     end
 
     def dir
@@ -41,10 +43,6 @@ module Appserver
 
     def rack?
       File.exist?(rack_config)
-    end
-
-    def unicorn_config
-      File.expand_path('../unicorn.conf.rb', __FILE__)
     end
 
     def pidfile
@@ -61,7 +59,7 @@ module Appserver
       if rack?
         cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
         f.puts %Q(check process #{name} with pidfile #{expand_path(pidfile)})
-        f.puts %Q(  start program = "#{unicorn} -E #{environment} -Dc #{unicorn_config} #{rack_config}")
+        f.puts %Q(  start program = "#{unicorn} -E #{environment} -Dc #{self.class.unicorn_config} #{rack_config}")
         f.puts %Q(  stop program = "/bin/kill `cat #{expand_path(pidfile)}`")
         f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
