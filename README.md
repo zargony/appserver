@@ -26,29 +26,21 @@ Or check out the [repository][repo] on github.
 Setup
 -----
 
-To run applications, you need to initialize a server directory first. To do
-so, create an empty directory and run `appserver init` in it. 
+To run applications, you need to initialize an appserver directory first. To
+do so, create an empty directory and run `appserver init` in it.
 
     $ mkdir /var/webapps
     $ cd /var/webapps
     $ appserver init
 
-A server directory holds configuration files and applications in
-subdirectories. You can customize things by editing the `appserver.yml`
-configuration. **Any other file/directory is updated automatically and should
-not be modified manually.**
-
-Modify your system's Monit configuration (e.g. `/etc/monit/monitrc` on Ubuntu)
-to include the generated `monitrc` at the bottom and reload Monit.
-
-*/etc/monit/monitrc:*
-
-    ⋮
-    include /var/webapps/monitrc
+An appserver directory holds configuration files and everything needed to run
+multiple applications (application code, temp files, log files, ...). You can
+customize settings by editing the `appserver.yml` configuration file. **All
+other files are updated automatically and should not be modified manually.**
 
 Modify your system's Nginx configuration (e.g. `/etc/nginx/nginx.conf` on
-Ubuntu) to include the generated `nginx.conf` **inside a `http` statement**
-and reload Nginx.
+Ubuntu) to include the generated `nginx.conf` **inside a `http` statement**.
+Reload Nginx to apply the configuration changes.
 
 */etc/nginx/nginx.conf:*
 
@@ -58,6 +50,15 @@ and reload Nginx.
       include /var/www/nginx.conf;
     }
     ⋮
+
+Modify your system's Monit configuration (e.g. `/etc/monit/monitrc` on Ubuntu)
+to include the generated `monitrc` at the bottom. Reload Monit to apply the
+configuration changes.
+
+*/etc/monit/monitrc:*
+
+    ⋮
+    include /var/webapps/monitrc
 
 Deploying an application
 ------------------------
