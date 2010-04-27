@@ -22,8 +22,8 @@ module Appserver
           puts 'your system\'s Monit and Nginx configuration to become active.'
 
         when :deploy
+          repository = server.repository(@arguments[0])
           # TODO
-          raise 'Command not implemented yet'
 
         when :update
           server.write_configs
