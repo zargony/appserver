@@ -76,7 +76,7 @@ module Appserver
       f.puts "# Application: #{name}"
       if rack?
         f.puts "upstream #{name}_cluster {"
-        f.puts "  server unix:#{File.expand_path(socket)} fail_timeout=0;"
+        f.puts "  server unix:#{File.expand_path(socket, dir)} fail_timeout=0;"
         f.puts "}"
         f.puts "server {"
         f.puts "  listen 80;"
