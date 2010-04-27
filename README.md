@@ -1,41 +1,58 @@
-Automagic Server Configuration for Webapps
-==========================================
+Automagic application server configurator
+=========================================
 
-Simply git push applications to your server to deploy them.
+Monit/Nginx/Unicorn application server configurator using deployment via git
+(simply git push applications to your server to deploy them).
 
-This little tool automatically generates server configs for [Monit][monit]
-and [Nginx][nginx] to host your [Rack][rack]-based (Rails) applications.
-Running it in git post-receive hooks on your server will give you an
-automatic deployment of your applications whenever you git push them to
-the server.
+This little tool automatically generates server configs for [Monit][monit],
+[Nginx][nginx] and [Unicorn][unicorn] to host your [Rack][rack]-based (Rails)
+applications. Running it automatically in git post-receive hooks provides
+an automatic deployment of applications whenever the repository is updated
+on the server.
 
 Requirements
 ------------
 
-* [Monit][monit]
-* [Nginx][nginx]
-* [Git][git]
-* Ruby with Gems, Rake, Thin
+A server running [Monit][monit], [Nginx][nginx] and having [Git][git] and
+Ruby with RubyGems installed.
+
+Install
+-------
+
+    gem install appserver
+
+Or check out the [repository][repo] on github.
 
 Setup
 -----
 
-1. Put the `Rakefile` into an empty directory or check out the [repository][repo].
-   This directory will serve as a the base directory for the web applications.
-2. Change to the newly created directory and run `rake`.
-3. Modify the system's monit configuration to include the generated `monitrc`
-   and reload monit.
-4. Modify the system's nginx configuration to include the generated `nginx.conf`
-   and reload nginx.
+To run applications, you need to initialize a server directory first. To do
+so, create an empty directory and run `appserver init` in it. 
 
-### Example install (Ubuntu)
-    git clone git://github.com/zargony/appserver-config.git /opt/webapps
-    cd /opt/webapps
-    rake
-    echo "include /opt/webapps/monitrc" >>/etc/monit/monitrc
-    monit reload
-    echo "include /opt/webapps/nginx.conf" >>/etc/nginx/nginx.conf
-    service nginx reload
+    mkdir /opt/webapps
+    cd /var/webapps
+    appserver init
+
+A server directory holds configuration files and applications in
+subdirectories. You can customize things by editing the `appserver.yml`
+configuration. Every other file/directory is updated automatically and should
+not be modified manually.
+
+Modify your system's Monit configuration (`/etc/monit/monitrc`) to include
+the generated `monitrc` at the bottom and reload Monit.
+
+Modify your system's Nginx configuration (`/etc/nginx/nginx.conf`) to include
+the generated `nginx.conf` inside a `http` statement and reload Nginx.
+
+Deploying an application
+------------------------
+
+to be done...
+
+How it works
+------------
+
+to be done...
 
 Author
 ------
@@ -45,5 +62,6 @@ Andreas Neuhaus :: <http://zargony.com/>
 [repo]: http://github.com/zargony/appserver-config/
 [monit]: http://mmonit.com/monit/
 [nginx]: http://nginx.com/
+[unicorn]: http://unicorn.bogomips.org/
 [git]: http://git-scm.com/
 [rack]: http://rack.rubyforge.org/
