@@ -2,31 +2,36 @@ module Appserver
   class UnknownCommandError < RuntimeError; end
 
   class Command
-    def self.run! (command, arguments, options = {})
-      new(command, arguments, options).run!
+    def self.run! (*args)
+      new(*args).run!
     end
+
+    attr_reader :command, :arguments, :options
 
     def initialize (command, arguments, options = {})
       @command, @arguments, @options = command, arguments, options
     end
 
     def run!
-      server = Server.new(@options.delete(:dir) || Dir.pwd, @options)
+      Dir.chdir(options[:dir]) if options[:dir]
 
-      case @command.to_sym
-        when :init
-          server.initialize_dir
-          puts 'Initialized server directory by creating appserver.yml.'
+      Server.initialize_dir if command == 'init'
+
+      server = Server.new(options)
+
+      case command
+        when 'init'
           server.write_configs
+          puts 'Initialized appserver directory.'
           puts 'Wrote Monit and Nginx configuration snippets. Make sure to include them into'
           puts 'your system\'s Monit and Nginx configuration to become active.'
 
-        when :deploy
-          repository = server.repository(@arguments[0])
+        when 'deploy'
+          repository = server.repository(arguments[0])
           # TODO
           repository.install_hook
 
-        when :update
+        when 'update'
           server.write_configs
           puts 'Wrote Monit and Nginx configuration snippets.'
 

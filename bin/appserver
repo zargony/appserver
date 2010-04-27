@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$:.unshift File.dirname(__FILE__) + "/../lib"
+$:.unshift File.expand_path('../../lib', __FILE__)
 
 require 'optparse'
 require 'appserver'
@@ -23,7 +23,7 @@ opts = OptionParser.new(nil, 20, '  ') do |opts|
   opts.separator '  Updates all generated configuration files.'
   opts.separator ''
   opts.separator 'Options:'
-  opts.on '-d', '--dir PATH', 'Specifies the server directory to use instead of the', 'current working directory' do |dir|
+  opts.on '-d', '--dir PATH', 'Change to the given directory before running the command' do |dir|
     options[:dir] = dir
   end
   opts.separator ''
