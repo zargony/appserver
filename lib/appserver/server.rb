@@ -46,9 +46,9 @@ module Appserver
       self.dir = self.class.search_dir
       raise NotInitializedError unless dir
       # Load configuration settings
-      @config = load_config(config_file, DEFAULTS)
-      @config.each do |key, value|
-        self[key] = value if members.include?(key)
+      @config = load_config(config_file)
+      DEFAULTS.each do |key, default_value|
+        self[key] = @config[key] || default_value
       end
     end
 
@@ -121,13 +121,8 @@ module Appserver
 
   protected
 
-    def load_config (filename, defaults = {})
-      config = YAML.load_file(filename) || {}
-      config = symbolize_keys(config)
-      defaults.each { |key, value| config[key] ||= value }
-      config
-    end
-
+    def load_config (filename)
+      symbolize_keys(YAML.load_file(filename) || {})
     end
   end
 end
