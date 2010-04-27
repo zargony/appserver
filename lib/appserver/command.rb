@@ -24,6 +24,7 @@ module Appserver
         when :deploy
           repository = server.repository(@arguments[0])
           # TODO
+          repository.install_hook
 
         when :update
           server.write_configs
