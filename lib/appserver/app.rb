@@ -60,12 +60,12 @@ module Appserver
       f.puts %Q(# Application: #{name})
       if rack?
         cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
-        f.puts %Q(check process #{name} with pidfile #{File.expand_path(pidfile, dir)})
+        f.puts %Q(check process #{name} with pidfile #{expand_path(pidfile)})
         f.puts %Q(  start program = "#{unicorn} -E #{environment} -Dc #{unicorn_config} #{rack_config}")
-        f.puts %Q(  stop program = "/bin/kill `cat #{File.expand_path(pidfile, dir)}`")
+        f.puts %Q(  stop program = "/bin/kill `cat #{expand_path(pidfile)}`")
         f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
-        f.puts %Q(  if failed unixsocket #{File.expand_path(socket, dir)} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
+        f.puts %Q(  if failed unixsocket #{expand_path(socket)} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
         f.puts %Q(  if 5 restarts within 5 cycles then timeout)
         f.puts %Q(  group #{name})
       end
@@ -76,13 +76,13 @@ module Appserver
       f.puts "# Application: #{name}"
       if rack?
         f.puts "upstream #{name}_cluster {"
-        f.puts "  server unix:#{File.expand_path(socket, dir)} fail_timeout=0;"
+        f.puts "  server unix:#{expand_path(socket)} fail_timeout=0;"
         f.puts "}"
         f.puts "server {"
         f.puts "  listen 80;"
         f.puts "  server_name #{hostname};"
-        f.puts "  root #{File.expand_path(public_dir, dir)};"
-        f.puts "  access_log #{File.expand_path(access_log, dir)};"
+        f.puts "  root #{expand_path(public_dir)};"
+        f.puts "  access_log #{expand_path(access_log)};"
         f.puts "  location / {"
         f.puts "    proxy_set_header X-Real-IP $remote_addr;"
         f.puts "    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
@@ -97,6 +97,12 @@ module Appserver
         f.puts "  }"
         f.puts "}"
       end
+    end
+
+  protected
+
+    def expand_path (path)
+      File.expand_path(path, dir)
     end
   end
 end
