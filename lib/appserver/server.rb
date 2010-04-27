@@ -53,8 +53,7 @@ module Appserver
 
     def apps
       @apps ||= begin
-        app_dirs ||= Dir.glob(File.join(dir, '*')).select { |f| File.directory?(f) }.map { |f| File.basename(f) }
-        app_dirs.map do |name|
+        Dir.glob(File.join(dir, '*')).select { |f| File.directory?(f) }.map { |f| File.basename(f) }.map do |name|
           App.new(self, name, @settings)
         end
       end
@@ -62,6 +61,19 @@ module Appserver
 
     def app (name)
       (@apps || []).find { |app| app.name == name } || App.new(self, name, @settings)
+    end
+
+    def repositories
+      @repositories ||= begin
+        Dir.glob(File.join(repo_dir, '*.git')).select { |f| File.directory?(f) }.map do |path|
+          Repository.new(self, path)
+        end
+      end
+    end
+
+    def repository (name_or_path)
+      path = name_or_path =~ %r(/) ? name_or_path : File.join(repo_dir, "#{name_or_path}.git")
+      (@repositories || []).find { |repo| File.expand_path(repo.path) == File.expand_path(path) } || Repository.new(self, path)
     end
 
     def write_configs
