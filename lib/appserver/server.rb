@@ -8,6 +8,8 @@ module Appserver
     class DirectoryNotEmptyError < RuntimeError; end
     class NotInitializedError < RuntimeError; end
 
+    include Utils
+
     DEFAULTS = {
       :repo_dir => (Etc.getpwnam('git') rescue {})[:dir],
       :monit_conf => 'monitrc',
@@ -117,18 +119,6 @@ module Appserver
       end
     end
 
-    def safe_replace_file (filename)
-      tempfile = Tempfile.new(File.basename(filename) + '.', File.dirname(filename))
-      if File.exist?(filename)
-        tempfile.chown(File.stat(filename).uid, File.stat(filename).gid)
-        tempfile.chmod(File.stat(filename).mode)
-      end
-      yield tempfile
-      tempfile.close
-      File.unlink(filename) if File.exist?(filename)
-      File.rename(tempfile, filename)
-    end
-
   protected
 
     def load_config (filename, defaults = {})
@@ -138,12 +128,6 @@ module Appserver
       config
     end
 
-    def symbolize_keys (hash)
-      hash.inject({}) do |memo, (key, value)|
-        value = symbolize_keys(value) if Hash === value
-        memo[key.to_sym] = value
-        memo
-      end
     end
   end
 end
