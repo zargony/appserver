@@ -139,6 +139,10 @@ module Appserver
         f.puts "    #{nginx_reopen}"
         f.puts "  endscript"
         f.puts "}"
+        # Add application-specific Logrotate configuration
+        apps.each do |app|
+          app.write_logrotate_config(f)
+        end
       end
     end
 

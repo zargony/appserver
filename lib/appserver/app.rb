@@ -116,6 +116,21 @@ module Appserver
       end
     end
 
+    def write_logrotate_config (f)
+      f.puts ""
+      f.puts "# Application: #{name}"
+      if rack?
+        f.puts "#{expand_path(server_log)} {"
+        f.puts "  missingok"
+        f.puts "  delaycompress"
+        f.puts "  sharedscripts"
+        f.puts "  postrotate"
+        f.puts "    kill -USR1 `cat #{expand_path(pid_file)}`"
+        f.puts "  endscript"
+        f.puts "}"
+      end
+    end
+
   protected
 
     def expand_path (path)
