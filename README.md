@@ -51,7 +51,7 @@ Reload Nginx to apply the configuration changes.
     ⋮
     http {
       ⋮
-      include /var/www/nginx.conf;
+      include /var/webapps/nginx.conf;
     }
     ⋮
 
