@@ -40,6 +40,14 @@
 # Environment to run the application in. Defaults to 'production'
 #environment: production
 
+# User and group to run the instances under. If user is left empty, the user
+# who owns the application directory is used. If group is left empty, the
+# primary group of the user is used. For security reasons, you might want to
+# set this to a different user than the file owner. (Debian based systems
+# typically use "www-data")
+#user:
+#group:
+
 # Default number of application instances (unicorn workers)
 #instances: 3
 

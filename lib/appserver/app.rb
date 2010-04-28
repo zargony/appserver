@@ -1,10 +1,14 @@
+require 'etc'
+
 module Appserver
-  class App < Struct.new(:server, :name, :unicorn, :environment, :instances, :preload,
+  class App < Struct.new(:server, :name, :unicorn, :environment, :user, :group, :instances, :preload,
                          :max_cpu_usage, :max_memory_usage, :usage_check_cycles,
                          :http_check_timeout, :hostname, :public_dir)
     DEFAULTS = {
       :unicorn => '/usr/local/bin/unicorn',
       :environment => 'production',
+      :user => nil,
+      :group => nil,
       :instances => 3,
       :preload => false,
       :max_cpu_usage => nil,
@@ -26,12 +30,18 @@ module Appserver
       DEFAULTS.each do |key, default_value|
         self[key] = appconfig[key] || config[key] || default_value
       end
+      # Use the directory owner as the user to run instances under by default
+      self.user = exist? ? Etc.getpwuid(File.stat(dir).uid).name : 'www-data'
       # Use a subdomain of the default hostname if no hostname was given specifically for this app
       self.hostname = "#{name}.#{hostname}" unless appconfig[:hostname]
     end
 
     def dir
       File.join(server.dir, name)
+    end
+
+    def exist?
+      File.exist?(dir)
     end
 
     def rack_config
