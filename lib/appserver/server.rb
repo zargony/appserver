@@ -2,7 +2,7 @@ require 'etc'
 require 'yaml'
 
 module Appserver
-  class Server < Struct.new(:dir, :repo_dir, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload, :logrotate_conf)
+  class Server < Struct.new(:dir, :repo_dir, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload, :nginx_reopen, :logrotate_conf)
     class AlreadyInitializedError < RuntimeError; end
     class DirectoryNotEmptyError < RuntimeError; end
     class NotInitializedError < RuntimeError; end
@@ -15,6 +15,7 @@ module Appserver
       :monit_reload => '/usr/sbin/monit reload',
       :nginx_conf => 'nginx.conf',
       :nginx_reload => '/usr/sbin/nginx -s reload',
+      :nginx_reopen => '/usr/sbin/nginx -s reopen',
       :logrotate_conf => 'logrotate.conf',
     }
 
