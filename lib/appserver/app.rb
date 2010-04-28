@@ -52,6 +52,10 @@ module Appserver
       File.exist?(rack_config)
     end
 
+    def startable?
+      rack?
+    end
+
     def pid_file
       File.join(server.tmp_dir, "#{name}.pid")
     end
