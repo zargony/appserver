@@ -25,6 +25,9 @@
 # the Monit snippet, so this command will be called as root
 #nginx_reload: /usr/sbin/nginx -s reload
 
+# Path/name of the logrotate configuration snippet that should be written
+#logrotate_conf: logrotate.conf
+
 
 #
 # APPLICATION SETTINGS

@@ -23,8 +23,8 @@ module Appserver
         when 'init'
           server.write_configs
           puts 'Initialized appserver directory.'
-          puts 'Wrote Monit and Nginx configuration snippets. Make sure to include them into'
-          puts 'your system\'s Monit and Nginx configuration to become active.'
+          puts 'Wrote configuration snippets. Make sure to include them into your'
+          puts 'system\'s Monit/Nginx/Logrotate configuration to become active.'
 
         when 'deploy'
           repository = server.repository(arguments[0])
@@ -33,7 +33,7 @@ module Appserver
 
         when 'update'
           server.write_configs
-          puts 'Wrote Monit and Nginx configuration snippets.'
+          puts 'Wrote configuration snippets.'
 
         else
           raise UnknownCommandError
