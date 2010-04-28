@@ -76,6 +76,11 @@ How it works
 
 to be done...
 
+Security considerations
+-----------------------
+
+to be done...
+
 Author
 ------
 
