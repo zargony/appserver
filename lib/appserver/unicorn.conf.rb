@@ -7,7 +7,7 @@ working_directory app.dir
 stderr_path app.server_log
 stdout_path app.server_log
 puts "Appserver unicorn configuration for #{app.dir}"
-pid app.pidfile
+pid app.pid_file
 listen "unix:#{app.socket}", :backlog => 64
 #user 'user', 'group'
 worker_processes app.instances
