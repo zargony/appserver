@@ -8,7 +8,7 @@ stderr_path app.server_log
 stdout_path app.server_log
 pid app.pid_file
 listen "unix:#{app.socket}", :backlog => 64
-#user 'user', 'group'
+user app.user, app.group
 worker_processes app.instances
 preload_app app.preload
 timeout 30
