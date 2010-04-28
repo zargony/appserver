@@ -43,18 +43,6 @@
 # Default number of application instances (unicorn workers)
 #instances: 3
 
-# Path where to store pid files of running instances. Defaults to the
-# tmp/pids directory in the application
-#pids_dir: tmp/pids
-
-# Path where to store sockets of running instances. Defaults to the
-# tmp/sockets directory in the application
-#sockets_dir: tmp/sockets
-
-# Path/name of the logfile for instance servers. Defaults to log/server.log
-# in the application
-#server_log: log/server.log
-
 # Let Monit watch the CPU usage of instances and restart them if their
 # CPU usage exceeds this value
 #max_cpu_usage:
@@ -81,10 +69,6 @@
 # Path where public static files should be served from. Defaults to the public
 # directory in the application
 #public_dir: public
-
-# Path/name of the logfile for request logging. Defaults to log/access.log
-# in the application
-#access_log: log/access.log
 
 
 #

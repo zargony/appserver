@@ -1,20 +1,16 @@
 module Appserver
-  class App < Struct.new(:server, :name, :unicorn, :environment, :instances, :pids_dir, :sockets_dir,
-                         :server_log, :max_cpu_usage, :max_memory_usage, :usage_check_cycles,
-                         :http_check_timeout, :hostname, :access_log, :public_dir)
+  class App < Struct.new(:server, :name, :unicorn, :environment, :instances,
+                         :max_cpu_usage, :max_memory_usage, :usage_check_cycles,
+                         :http_check_timeout, :hostname, :public_dir)
     DEFAULTS = {
       :unicorn => '/usr/local/bin/unicorn',
       :environment => 'production',
       :instances => 3,
-      :pids_dir => 'tmp/pids',
-      :sockets_dir => 'tmp/sockets',
-      :server_log => 'log/server.log',
       :max_cpu_usage => nil,
       :max_memory_usage => nil,
       :usage_check_cycles => 5,
       :http_check_timeout => 30,
       :hostname => `/bin/hostname -f`.chomp.gsub(/^[^.]+\./, ''),
-      :access_log => 'log/access.log',
       :public_dir => 'public',
     }
 
@@ -46,11 +42,19 @@ module Appserver
     end
 
     def pid_file
-      File.join(pids_dir, 'unicorn.pid')
+      File.join(server.tmp_dir, "#{name}.pid")
     end
 
     def socket
-      File.join(sockets_dir, 'unicorn.socket')
+      File.join(server.tmp_dir, "#{name}.socket")
+    end
+
+    def server_log
+      File.join(server.log_dir, "#{name}.server.log")
+    end
+
+    def access_log
+      File.join(server.log_dir, "#{name}.access.log")
     end
 
     def write_monit_config (f)
