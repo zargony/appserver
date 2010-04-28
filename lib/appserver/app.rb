@@ -75,7 +75,7 @@ module Appserver
         cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
         f.puts %Q(check process #{name} with pidfile #{expand_path(pid_file)})
         f.puts %Q(  start program = "#{unicorn} -E #{environment} -Dc #{self.class.unicorn_config} #{rack_config}")
-        f.puts %Q(  stop program = "/bin/kill `cat #{expand_path(pid_file)}`")
+        f.puts %Q(  stop program = "/bin/bash -c 'kill -TERM `cat #{expand_path(pid_file)}`'")
         f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
         f.puts %Q(  if failed unixsocket #{expand_path(socket)} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
