@@ -31,7 +31,7 @@ module Appserver
         self[key] = appconfig[key] || config[key] || default_value
       end
       # Use the directory owner as the user to run instances under by default
-      self.user = exist? ? Etc.getpwuid(File.stat(dir).uid).name : 'www-data'
+      self.user ||= exist? ? Etc.getpwuid(File.stat(dir).uid).name : 'www-data'
       # Use a subdomain of the default hostname if no hostname was given specifically for this app
       self.hostname = "#{name}.#{hostname}" unless appconfig[:hostname]
     end
