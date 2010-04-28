@@ -6,13 +6,12 @@ app = Appserver::Server.new.app(File.basename(Dir.pwd))
 working_directory app.dir
 stderr_path app.server_log
 stdout_path app.server_log
-puts "Appserver unicorn configuration for #{app.dir}"
 pid app.pid_file
 listen "unix:#{app.socket}", :backlog => 64
 #user 'user', 'group'
 worker_processes app.instances
+preload_app app.preload
 timeout 30
-preload_app true
 
 # Use COW-friendly REE for memory saving, especially with preloaded apps
 # http://rubyenterpriseedition.com/faq.html#adapt_apps_for_cow

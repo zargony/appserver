@@ -1,11 +1,12 @@
 module Appserver
-  class App < Struct.new(:server, :name, :unicorn, :environment, :instances,
+  class App < Struct.new(:server, :name, :unicorn, :environment, :instances, :preload,
                          :max_cpu_usage, :max_memory_usage, :usage_check_cycles,
                          :http_check_timeout, :hostname, :public_dir)
     DEFAULTS = {
       :unicorn => '/usr/local/bin/unicorn',
       :environment => 'production',
       :instances => 3,
+      :preload => false,
       :max_cpu_usage => nil,
       :max_memory_usage => nil,
       :usage_check_cycles => 5,

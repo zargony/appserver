@@ -43,6 +43,10 @@
 # Default number of application instances (unicorn workers)
 #instances: 3
 
+# Use Unicorn's application preloading before forking instances. Defaults to
+# false (don't preload applications)
+#preloading: false
+
 # Let Monit watch the CPU usage of instances and restart them if their
 # CPU usage exceeds this value
 #max_cpu_usage:
