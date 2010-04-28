@@ -25,6 +25,10 @@
 # the Monit snippet, so this command will be called as root
 #nginx_reload: /usr/sbin/nginx -s reload
 
+# Command to execute to tell Nginx to reopen the log files. Used within
+# the Logrotate snippet, so this command will be called as root
+#nginx_reopen: /usr/sbin/nginx -s reopen
+
 # Path/name of the logrotate configuration snippet that should be written
 #logrotate_conf: logrotate.conf
 
