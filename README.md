@@ -26,6 +26,8 @@ Or check out the [repository][repo] on github.
 Setup
 -----
 
+### Initialize an appserver directory
+
 To run applications, you need to initialize an appserver directory first. To
 do so, create an empty directory and run `appserver init` in it.
 
@@ -37,6 +39,8 @@ An appserver directory holds configuration files and everything needed to run
 multiple applications (application code, temp files, log files, ...). You can
 customize settings by editing the `appserver.yml` configuration file. **All
 other files are updated automatically and should not be modified manually.**
+
+### Activate generated Nginx configuration
 
 Modify your system's Nginx configuration (e.g. `/etc/nginx/nginx.conf` on
 Ubuntu) to include the generated `nginx.conf` **inside a `http` statement**.
@@ -50,6 +54,8 @@ Reload Nginx to apply the configuration changes.
       include /var/www/nginx.conf;
     }
     ⋮
+
+### Activate generated Monit configuration
 
 Modify your system's Monit configuration (e.g. `/etc/monit/monitrc` on Ubuntu)
 to include the generated `monitrc` at the bottom. Reload Monit to apply the
