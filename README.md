@@ -66,6 +66,18 @@ configuration changes.
     ⋮
     include /var/webapps/monitrc
 
+### Activate generated Logrotate configuration
+
+Modify your system's Logrotate configuration (e.g. `/etc/logrotate.conf` on
+Ubuntu) to include the generated `logrotate.conf` at the bottom. Logrotate
+is typically executed from cron, so there's no daemon to reload to apply the
+configuration changes.
+
+*/etc/logrotate.conf:*
+
+    ⋮
+    include /var/webapps/logrotate.conf
+
 Deploying an application
 ------------------------
 
