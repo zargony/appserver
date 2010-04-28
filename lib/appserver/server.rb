@@ -37,6 +37,9 @@ module Appserver
       safe_replace_file('appserver.yml') do |f|
         f.puts File.read(config_file_template)
       end
+      ['tmp', 'log'].each do |dir|
+        Dir.mkdir(dir) if !File.directory?(dir)
+      end
     end
 
     def initialize (options = {})
@@ -53,6 +56,14 @@ module Appserver
 
     def config_file
       File.join(dir, 'appserver.yml')
+    end
+
+    def tmp_dir
+      File.join(dir, 'tmp')
+    end
+
+    def log_dir
+      File.join(dir, 'log')
     end
 
     def app (name)
