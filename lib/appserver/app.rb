@@ -1,10 +1,11 @@
 require 'etc'
 
 module Appserver
-  class App < Struct.new(:server, :name, :unicorn, :environment, :user, :group, :instances, :preload,
-                         :max_cpu_usage, :max_memory_usage, :usage_check_cycles,
-                         :http_check_timeout, :hostname, :public_dir)
+  class App < Struct.new(:server, :name, :branch, :unicorn, :environment, :user, :group, :instances, :preload,
+                         :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
+                         :hostname, :public_dir)
     DEFAULTS = {
+      :branch => 'master',
       :unicorn => '/usr/local/bin/unicorn',
       :environment => 'production',
       :user => nil,

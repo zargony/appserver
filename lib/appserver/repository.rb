@@ -54,7 +54,7 @@ module Appserver
       build_dir, old_dir = "#{app.dir}.new", "#{app.dir}.old"
       begin
         # Check out the current code
-        checkout(build_dir)
+        checkout(build_dir, app.branch)
 
         # TODO: more deploy setup (build gem bundle, write database config, ...)
 

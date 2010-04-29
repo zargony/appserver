@@ -41,6 +41,9 @@
 # application has it's own directory under the appserver directory.
 #
 
+# Branch to check out when deploying an application. Defaults to 'master'
+#branch: master
+
 # Name/path of unicorn
 #unicorn: /usr/local/bin/unicorn
 
