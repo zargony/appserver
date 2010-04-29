@@ -22,7 +22,9 @@ module Appserver
     end
 
     def valid?
-      File.directory?(File.join(dir, 'hooks')) && File.directory?(File.join(dir, 'refs'))
+      name && name != '' &&
+      File.directory?(File.join(dir, 'hooks')) &&
+      File.directory?(File.join(dir, 'refs'))
     end
 
     def post_receive_hook
