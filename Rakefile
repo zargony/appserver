@@ -12,6 +12,7 @@ begin
     gem.authors = ['Andreas Neuhaus']
     gem.requirements << 'a server with Monit, Nginx and Git'
     gem.add_dependency 'unicorn', '~> 0.97'
+    gem.add_dependency 'git', '~> 1.2'
     gem.has_rdoc = false
   end
   Jeweler::GemcutterTasks.new
