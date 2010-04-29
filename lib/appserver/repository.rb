@@ -1,3 +1,5 @@
+require 'git'
+
 module Appserver
   class Repository < Struct.new(:server, :dir)
     class InvalidRepositoryError < RuntimeError; end
@@ -47,6 +49,18 @@ module Appserver
 
     def expand_path (path)
       File.expand_path(path, dir)
+    end
+
+    def checkout (path, branch = 'master')
+      # There seem to be two ways to "export" the tip of a branch from a repository
+      # 1. clone the repository, check out the branch and remove the .git directory afterwards
+      #system("git clone --depth 1 --branch master #{dir} #{path} && rm -rf #{path}/.git")
+      # 2. do a hard reset while pointing GIT_DIR to the repository and GIT_WORK_TREE to an empty dir
+      #system("mkdir #{path} && git --git-dir=#{dir} --work-tree=#{path} reset --hard #{branch}")
+
+      # We use the Git.export from the git gem here, which uses the first
+      # method (and handles errors more nicely than a uing system())
+      Git.export(dir, path, :branch => branch)
     end
   end
 end
