@@ -28,8 +28,10 @@ module Appserver
 
         when 'deploy'
           repository = server.repository(arguments[0])
-          # TODO
           repository.install_hook
+          puts 'Deploying application...'
+          repository.deploy
+          puts 'Done.'
 
         when 'update'
           server.write_configs
