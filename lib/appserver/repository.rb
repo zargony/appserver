@@ -13,6 +13,11 @@ module Appserver
       File.basename(dir, '.git')
     end
 
+    def app
+      # The app for this repository (same name)
+      server.app(name)
+    end
+
     def valid?
       File.directory?(File.join(dir, 'hooks')) && File.directory?(File.join(dir, 'refs'))
     end
@@ -23,7 +28,6 @@ module Appserver
 
     def install_hook
       deploy_cmd = "#{File.expand_path($0)} -d #{server.dir} deploy #{dir}"
-      puts deploy_cmd
       if !File.exist?(post_receive_hook) || !File.executable?(post_receive_hook)
         puts "Installing git post-receive hook to repository #{dir}..."
         safe_replace_file(post_receive_hook) do |f|
