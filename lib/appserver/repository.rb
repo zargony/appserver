@@ -17,8 +17,8 @@ module Appserver
     end
 
     def app
-      # The app for this repository (same name)
-      server.app(name)
+      # The app for this repository (app of same name)
+      @app ||= server.app(name)
     end
 
     def valid?
