@@ -63,6 +63,14 @@ module Appserver
       rack?
     end
 
+    def gem_file
+      File.join(dir, 'Gemfile')
+    end
+
+    def bundle_dir
+      File.join(dir, '.bundle')
+    end
+
     def setup_env!
       # Apply whitelist if set
       if env_whitelist != ['*']
@@ -72,6 +80,17 @@ module Appserver
       # Set environment variables
       if env
         ENV.update(env)
+      end
+      # Setup gem bundle if present
+      if File.exist?(gem_file) && Dir.exist?(bundle_dir)
+        ENV.update({ 'GEM_HOME' => bundle_dir, 'BUNDLE_PATH' => bundle_dir })
+        # Remember load paths of required gems (which use autloading), before bundler takes away the load path
+        remember_paths = $LOAD_PATH.select { |path| path =~ %r(/(unicorn|rack|appserver)[^/]*/) }
+        # Load bundler and setup gem bundle
+        require 'bundler'
+        Bundler.setup
+        # Re-add remembered load paths
+        $LOAD_PATH.unshift *remember_paths
       end
     end
 
