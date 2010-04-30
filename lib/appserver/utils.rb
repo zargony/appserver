@@ -10,6 +10,10 @@ module Appserver
     end
 
     module Methods
+      def find_in_path (name)
+        ENV['PATH'].split(':').find { |path| File.exist?(File.join(path, name)) }
+      end
+
       def safe_replace_file (filename)
         tempfile = Tempfile.new(File.basename(filename) + '.', File.dirname(filename))
         if File.exist?(filename)
