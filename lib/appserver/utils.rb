@@ -1,3 +1,4 @@
+require 'socket'
 require 'tempfile'
 
 module Appserver
@@ -12,6 +13,14 @@ module Appserver
     module Methods
       def find_in_path (name)
         ENV['PATH'].split(':').find { |path| File.exist?(File.join(path, name)) }
+      end
+
+      def system_hostname
+        Socket.gethostname
+      end
+
+      def system_domainname
+        system_hostname.sub(/^[^.]+\./, '')
       end
 
       def safe_replace_file (filename)
