@@ -38,7 +38,7 @@ module Appserver
     end
 
     def dir
-      File.join(server.dir, name)
+      File.join(server.apps_dir, name)
     end
 
     def exist?
