@@ -18,7 +18,7 @@ module Appserver
       :max_memory_usage => nil,
       :usage_check_cycles => 5,
       :http_check_timeout => 30,
-      :hostname => `/bin/hostname -f`.chomp.gsub(/^[^.]+\./, ''),
+      :hostname => system_domainname,
       :public_dir => 'public',
     }
 
