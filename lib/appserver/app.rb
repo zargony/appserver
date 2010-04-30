@@ -1,12 +1,12 @@
 require 'etc'
 
 module Appserver
-  class App < Struct.new(:server, :name, :branch, :unicorn, :environment, :user, :group, :instances, :preload,
+  class App < Struct.new(:server, :name, :branch, :ruby, :environment, :user, :group, :instances, :preload,
                          :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
                          :hostname, :public_dir)
     DEFAULTS = {
       :branch => 'master',
-      :unicorn => '/usr/local/bin/unicorn',
+      :ruby => `which ruby`.chomp,
       :environment => 'production',
       :user => nil,
       :group => nil,
@@ -79,7 +79,7 @@ module Appserver
       if rack?
         cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
         f.puts %Q(check process #{name} with pidfile #{expand_path(pid_file)})
-        f.puts %Q(  start program = "#{unicorn} -E #{environment} -Dc #{self.class.unicorn_config} #{rack_config}")
+        f.puts %Q(  start program = "#{ruby} -S -- unicorn -E #{environment} -Dc #{self.class.unicorn_config} #{rack_config}")
         f.puts %Q(  stop program = "/bin/bash -c 'kill -TERM `cat #{expand_path(pid_file)}`'")
         f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
