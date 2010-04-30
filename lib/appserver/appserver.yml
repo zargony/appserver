@@ -78,6 +78,12 @@
 # preserved
 #env_whitelist:
 
+# In addition to the whitelisted environment variables, RACK_ENV and
+# BUNDLE_PATH are set. If want to set more environment variables, specify
+# them here
+#env:
+#  KEY: value
+
 # Let Monit watch the CPU usage of instances and restart them if their
 # CPU usage exceeds this value
 #max_cpu_usage:
