@@ -63,8 +63,10 @@
 #user:
 #group:
 
-# Default number of application instances (unicorn workers)
-#instances: 3
+# Number of instances (unicorn workers) for an application. This defaults to
+# the number of CPUs detected, which should be fine for most cases (read the
+# unicorn tuning tips before changing this)
+#instances: 2
 
 # Use Unicorn's application preloading before forking instances. Defaults to
 # false (don't preload applications)

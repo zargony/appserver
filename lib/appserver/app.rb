@@ -12,7 +12,7 @@ module Appserver
       :environment => 'production',
       :user => nil,
       :group => nil,
-      :instances => 3,
+      :instances => number_of_cpus || 1,
       :preload => false,
       :max_cpu_usage => nil,
       :max_memory_usage => nil,
