@@ -44,8 +44,13 @@
 # Branch to check out when deploying an application. Defaults to 'master'
 #branch: master
 
-# Name/path of unicorn
-#unicorn: /usr/local/bin/unicorn
+# Name/path of the command to call Ruby. By default, this points to the
+# ruby command in your PATH, usually /usr/bin/ruby. Set this, if you want to
+# use a manually installed ruby that is not in your PATH. If you're using
+# RVM, you can use "/usr/local/bin/rvm XYZ ruby" here, where XYZ is the
+# Ruby version you want to run. Make sure the targetted Ruby version has
+# the required gems installed ("rvm gem install appserver")
+#ruby: /usr/bin/ruby
 
 # Environment to run the application in. Defaults to 'production'
 #environment: production
