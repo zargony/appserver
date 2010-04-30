@@ -6,6 +6,7 @@ app = Appserver::Server.new.app(File.basename(Dir.pwd))
 working_directory app.dir
 stderr_path app.server_log
 stdout_path app.server_log
+app.setup_env!
 pid app.pid_file
 listen "unix:#{app.socket}", :backlog => 64
 user app.user, app.group
