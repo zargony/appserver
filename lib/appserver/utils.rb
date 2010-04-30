@@ -23,6 +23,12 @@ module Appserver
         system_hostname.sub(/^[^.]+\./, '')
       end
 
+      def number_of_cpus
+        if File.exist?('/proc/cpuinfo')
+          File.readlines('/proc/cpuinfo').grep(/^processor\s+:\s+\d+/).size
+        end
+      end
+
       def safe_replace_file (filename)
         tempfile = Tempfile.new(File.basename(filename) + '.', File.dirname(filename))
         if File.exist?(filename)
