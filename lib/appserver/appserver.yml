@@ -72,6 +72,12 @@
 # false (don't preload applications)
 #preload: false
 
+# By default, only PATH and GEM_PATH environment settings are preserved. If you
+# need more environment variables to be preserved, list them here (comma-
+# separated list). If you set this to *, all environment variables are
+# preserved
+#env_whitelist:
+
 # Let Monit watch the CPU usage of instances and restart them if their
 # CPU usage exceeds this value
 #max_cpu_usage:

@@ -2,7 +2,7 @@ require 'etc'
 
 module Appserver
   class App < Struct.new(:server, :name, :branch, :ruby, :environment, :user, :group, :instances, :preload,
-                         :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
+                         :env_whitelist, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
                          :hostname, :public_dir)
     include Utils
 
@@ -14,6 +14,7 @@ module Appserver
       :group => nil,
       :instances => number_of_cpus || 1,
       :preload => false,
+      :env_whitelist => [],
       :max_cpu_usage => nil,
       :max_memory_usage => nil,
       :usage_check_cycles => 5,
@@ -35,6 +36,8 @@ module Appserver
       end
       # Use the directory owner as the user to run instances under by default
       self.user ||= exist? ? Etc.getpwuid(File.stat(dir).uid).name : 'www-data'
+      # Make array from comma separated list
+      self.env_whitelist = env_whitelist.split(/\s*,\s*/) if String === env_whitelist
       # Use a subdomain of the default hostname if no hostname was given specifically for this app
       self.hostname = "#{name.gsub(/[^a-z0-9_-]+/i, '_')}.#{hostname}" unless appconfig[:hostname]
     end
@@ -57,6 +60,14 @@ module Appserver
 
     def startable?
       rack?
+    end
+
+    def setup_env!
+      always_whitelist = ['PATH', 'RACK_ENV', 'GEM_PATH']
+      # Apply whitelist if set
+      if env_whitelist != ['*']
+        ENV.reject! { |key, value| !env_whitelist.include?(key) && !always_whitelist.include?(key) }
+      end
     end
 
     def pid_file
