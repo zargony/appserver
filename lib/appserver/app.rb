@@ -4,9 +4,11 @@ module Appserver
   class App < Struct.new(:server, :name, :branch, :ruby, :environment, :user, :group, :instances, :preload,
                          :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
                          :hostname, :public_dir)
+    include Utils
+
     DEFAULTS = {
       :branch => 'master',
-      :ruby => `which ruby`.chomp,
+      :ruby => find_in_path('ruby') || '/usr/bin/ruby',
       :environment => 'production',
       :user => nil,
       :group => nil,
