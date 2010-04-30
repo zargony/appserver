@@ -2,7 +2,7 @@ require 'etc'
 
 module Appserver
   class App < Struct.new(:server, :name, :branch, :ruby, :environment, :user, :group, :instances, :preload,
-                         :env_whitelist, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
+                         :env_whitelist, :env, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
                          :hostname, :public_dir)
     include Utils
 
@@ -15,6 +15,7 @@ module Appserver
       :instances => number_of_cpus || 1,
       :preload => false,
       :env_whitelist => [],
+      :env => {},
       :max_cpu_usage => nil,
       :max_memory_usage => nil,
       :usage_check_cycles => 5,
@@ -64,9 +65,13 @@ module Appserver
 
     def setup_env!
       # Apply whitelist if set
-      always_whitelist = ['PATH', 'PWD', 'GEM_PATH', 'RACK_ENV']
       if env_whitelist != ['*']
+        always_whitelist = ['PATH', 'PWD', 'GEM_PATH', 'RACK_ENV']
         ENV.reject! { |key, value| !env_whitelist.include?(key) && !always_whitelist.include?(key) }
+      end
+      # Set environment variables
+      if env
+        ENV.update(env)
       end
     end
 
