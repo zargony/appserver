@@ -55,14 +55,17 @@ module Appserver
       begin
         # Check out the current code
         checkout(build_dir, app.branch)
+        # Install gem bundle if a Gemfile exists
+        install_bundle(build_dir)
 
-        # TODO: more deploy setup (build gem bundle, write database config, ...)
+        # TODO: more deploy setup (write database config, ...)
 
         # Replace the current application directory with the newly built one
         FileUtils.rm_rf old_dir
         FileUtils.mv app.dir, old_dir if Dir.exist?(app.dir)
         FileUtils.mv build_dir, app.dir
 
+        # TODO: update monit/nginx configs (needs root, use monit?)
         # TODO: restart instances (needs root, use monit?)
         # TODO: remove old_dir *after* restart succeeded, maybe revert to old_dir on failure
 
@@ -90,6 +93,18 @@ module Appserver
       # We use the Git.export from the git gem here, which uses the first
       # method (and handles errors more nicely than a uing system())
       Git.export(dir, path, :branch => branch)
+    end
+
+    def install_bundle (path)
+      bundle_path = File.join(path, '.bundle')
+      gemfile = File.join(path, 'Gemfile')
+      # Remove any .bundle subdirectory (it shouldn't be in the repository anyway)
+      FileUtils.rm_rf bundle_path
+      # If there's a Gemfile, change to the application directory and run "bundler install"
+      return unless File.exist?(gemfile)
+      Dir.chdir(path) do
+        system Gem.bin_path('bundler', 'bundle'), 'install', bundle_path
+      end
     end
   end
 end
