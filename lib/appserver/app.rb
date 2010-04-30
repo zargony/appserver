@@ -66,7 +66,7 @@ module Appserver
     def setup_env!
       # Apply whitelist if set
       if env_whitelist != ['*']
-        always_whitelist = ['PATH', 'PWD', 'GEM_PATH', 'RACK_ENV']
+        always_whitelist = ['PATH', 'PWD', 'GEM_HOME', 'GEM_PATH', 'RACK_ENV']
         ENV.reject! { |key, value| !env_whitelist.include?(key) && !always_whitelist.include?(key) }
       end
       # Set environment variables
