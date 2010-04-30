@@ -85,7 +85,7 @@ module Appserver
         f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
         f.puts %Q(  if failed unixsocket #{expand_path(socket)} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
         f.puts %Q(  if 5 restarts within 5 cycles then timeout)
-        f.puts %Q(  group #{name})
+        f.puts %Q(  group appserver)
       end
     end
 
