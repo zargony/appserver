@@ -39,7 +39,7 @@ module Appserver
       safe_replace_file('appserver.yml') do |f|
         f.puts File.read(config_file_template)
       end
-      ['tmp', 'log'].each do |dir|
+      ['apps', 'tmp', 'log'].each do |dir|
         Dir.mkdir(dir) if !File.directory?(dir)
       end
     end
@@ -60,6 +60,10 @@ module Appserver
       File.join(dir, 'appserver.yml')
     end
 
+    def apps_dir
+      File.join(dir, 'apps')
+    end
+
     def tmp_dir
       File.join(dir, 'tmp')
     end
@@ -74,7 +78,7 @@ module Appserver
     end
 
     def apps
-      Dir.glob(File.join(dir, '*')).select { |f| File.directory?(f) }.map { |f| File.basename(f) }.map { |name| app(name) }.select { |app| app.startable? }
+      Dir.glob(File.join(apps_dir, '*')).select { |f| File.directory?(f) }.map { |f| File.basename(f) }.map { |name| app(name) }.select { |app| app.startable? }
     end
 
     def repository (name_or_path)
