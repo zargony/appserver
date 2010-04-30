@@ -103,7 +103,7 @@ module Appserver
       # If there's a Gemfile, change to the application directory and run "bundler install"
       return unless File.exist?(gemfile)
       Dir.chdir(path) do
-        system Gem.bin_path('bundler', 'bundle'), 'install', bundle_path
+        system Gem.bin_path('bundler', 'bundle'), 'install', bundle_path, '--without', 'development', 'test'
       end
     end
   end
