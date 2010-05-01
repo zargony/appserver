@@ -27,34 +27,35 @@ module Appserver
       File.directory?(File.join(dir, 'refs'))
     end
 
-    def post_receive_hook
-      File.join(dir, 'hooks', 'post-receive')
+    def update_hook
+      File.join(dir, 'hooks', 'update')
     end
 
     def install_hook
-      deploy_cmd = "#{File.expand_path($0)} -d #{server.dir} deploy #{dir}"
-      if !File.exist?(post_receive_hook) || !File.executable?(post_receive_hook)
-        puts "Installing git post-receive hook to repository #{dir}..."
-        safe_replace_file(post_receive_hook) do |f|
+      deploy_cmd = "#{File.expand_path($0)} -d #{server.dir} deploy"
+      if !File.exist?(update_hook) || !File.executable?(update_hook)
+        puts "Installing git update hook to repository #{dir}..."
+        safe_replace_file(update_hook) do |f|
           f.puts '#!/bin/sh'
-          f.puts deploy_cmd
+          f.puts "#{deploy_cmd} #{dir} $1 $3"
           f.chown File.stat(dir).uid, File.stat(dir).gid
           f.chmod 0755
         end
-      elsif !File.readlines(post_receive_hook).any? { |line| line =~ /^#{Regexp.escape(deploy_cmd)}/ }
-        puts "Couldn't install post-receive hook. Foreign hook script already present in repository #{dir}!"
+      elsif !File.readlines(update_hook).any? { |line| line =~ /^#{Regexp.escape(deploy_cmd)}/ }
+        puts "Couldn't install update hook. Foreign hook script already present in repository #{dir}!"
       else
         #puts "Hook already installed in repository #{dir}"
       end
     end
 
-    def deploy
+    def deploy (ref = nil)
       # Choose a temporary build directory on the same filesystem so that it
       # can be easily renamed/moved to be the real application directory later
       build_dir, old_dir = "#{app.dir}.new", "#{app.dir}.old"
       begin
         # Check out the current code
-        checkout(build_dir, app.branch)
+        ref ||= app.branch
+        checkout(build_dir, ref)
         # Install gem bundle if a Gemfile exists
         install_bundle(build_dir)
 
@@ -83,16 +84,14 @@ module Appserver
       File.expand_path(path, dir)
     end
 
-    def checkout (path, branch = 'master')
+    def checkout (path, ref = 'master')
       # There seem to be two ways to "export" the tip of a branch from a repository
       # 1. clone the repository, check out the branch and remove the .git directory afterwards
       #system("git clone --depth 1 --branch master #{dir} #{path} && rm -rf #{path}/.git")
       # 2. do a hard reset while pointing GIT_DIR to the repository and GIT_WORK_TREE to an empty dir
       #system("mkdir #{path} && git --git-dir=#{dir} --work-tree=#{path} reset --hard #{branch}")
-
-      # We use the Git.export from the git gem here, which uses the first
-      # method (and handles errors more nicely than a uing system())
-      Git.export(dir, path, :branch => branch)
+      Git.clone(dir, path, :depth => 1).checkout(ref)
+      Dir.chdir(path) { FileUtils.rm_r '.git' }
     end
 
     def install_bundle (path)
