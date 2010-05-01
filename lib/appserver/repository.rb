@@ -95,14 +95,14 @@ module Appserver
     end
 
     def install_bundle (path)
-      bundle_path = File.join(path, '.bundle')
-      gemfile = File.join(path, 'Gemfile')
-      # Remove any .bundle subdirectory (it shouldn't be in the repository anyway)
-      FileUtils.rm_rf bundle_path
-      # If there's a Gemfile, change to the application directory and run "bundler install"
-      return unless File.exist?(gemfile)
       Dir.chdir(path) do
-        system Gem.bin_path('bundler', 'bundle'), 'install', bundle_path, '--without', 'development', 'test'
+        # Remove any .bundle subdirectory (it shouldn't be in the repository anyway)
+        FileUtils.rm_rf '.bundle'
+        # If there's a Gemfile, run "bundler install .bundle"
+        if File.exist?('Gemfile')
+          bundle_cmd = Gem.bin_path('bundler', 'bundle')
+          system bundle_cmd, 'install', '.bundle', '--without', 'development', 'test'
+        end
       end
     end
   end
