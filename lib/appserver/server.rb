@@ -78,7 +78,12 @@ module Appserver
     end
 
     def apps
-      Dir.glob(File.join(apps_dir, '*')).select { |f| File.directory?(f) }.map { |f| File.basename(f) }.map { |name| app(name) }.select { |app| app.startable? }
+      Dir.glob(File.join(apps_dir, '*'))
+        .select { |f| File.directory?(f) }
+        .map { |f| File.basename(f) }
+        .reject { |f| f =~ /\.(tmp|old|new)$/ }
+        .map { |name| app(name) }
+        .select { |app| app.startable? }
     end
 
     def repository (name_or_path)
