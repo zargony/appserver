@@ -6,8 +6,8 @@ Monit/Nginx/Unicorn application server configurator using deployment via git
 
 This little tool automatically generates server configs for [Monit][monit],
 [Nginx][nginx] and [Unicorn][unicorn] to host your [Rack][rack]-based (Rails)
-applications. Running it automatically in git post-receive hooks provides
-an automatic deployment of applications whenever the repository is updated
+applications. Running it automatically in git update hooks provides an
+automatic deployment of applications whenever the repository is updated
 on the server.
 
 Requirements

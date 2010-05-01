@@ -29,8 +29,15 @@ module Appserver
         when 'deploy'
           repository = server.repository(arguments[0])
           repository.install_hook
+          # Second and third arguments are used by git update hooks and contain
+          # the ref name and the new ref that just have been updated
+          ref = repository.app.branch
+          if arguments[1] && arguments[2]
+            return unless arguments[1] =~ %r(refs/heads/#{ref})
+            ref = arguments[2]
+          end
           puts 'Deploying application...'
-          repository.deploy
+          repository.deploy(ref)
           puts 'Done.'
 
         when 'update'
