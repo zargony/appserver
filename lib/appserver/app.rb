@@ -51,6 +51,10 @@ module Appserver
       File.exist?(dir)
     end
 
+    def revision_file
+      File.join(dir, 'REVISION')
+    end
+
     def rack_config
       File.join(dir, 'config.ru')
     end
@@ -123,6 +127,8 @@ module Appserver
         f.puts %Q(  if failed unixsocket #{expand_path(socket)} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
         f.puts %Q(  if 5 restarts within 5 cycles then timeout)
         f.puts %Q(  group appserver)
+        f.puts %Q(check file #{name}_revision with path #{expand_path(revision_file)})
+        f.puts %Q(  if changed checksum then exec "/bin/bash -c 'kill -USR2 `cat #{expand_path(pid_file)}`'")
       end
     end
 
