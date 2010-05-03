@@ -65,11 +65,6 @@ module Appserver
         FileUtils.rm_rf old_dir
         FileUtils.mv app.dir, old_dir if Dir.exist?(app.dir)
         FileUtils.mv build_dir, app.dir
-
-        # TODO: update monit/nginx configs (needs root, use monit?)
-        # TODO: restart instances (needs root, use monit?)
-        # TODO: remove old_dir *after* restart succeeded, maybe revert to old_dir on failure
-
       ensure
         # If anything broke and the build directory still exists, remove it
         FileUtils.rm_rf build_dir
