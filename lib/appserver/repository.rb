@@ -90,8 +90,15 @@ module Appserver
       #system("git clone --depth 1 --branch master #{dir} #{path} && rm -rf #{path}/.git")
       # 2. do a hard reset while pointing GIT_DIR to the repository and GIT_WORK_TREE to an empty dir
       #system("mkdir #{path} && git --git-dir=#{dir} --work-tree=#{path} reset --hard #{branch}")
-      Git.clone(dir, path, :depth => 1).checkout(ref)
-      Dir.chdir(path) { FileUtils.rm_r '.git' }
+      git = Git.clone(dir, path, :depth => 1)
+      ref = git.revparse(ref)
+      git.checkout(ref)
+      Dir.chdir(path) do
+        FileUtils.rm_r '.git'
+        safe_replace_file 'REVISION' do |f|
+          f.puts ref
+        end
+      end
     end
 
     def install_bundle (path)
