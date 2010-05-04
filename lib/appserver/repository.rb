@@ -100,10 +100,9 @@ module Appserver
       Dir.chdir(path) do
         # Remove any .bundle subdirectory (it shouldn't be in the repository anyway)
         FileUtils.rm_rf '.bundle'
-        # If there's a Gemfile, run "bundler install .bundle"
+        # If there's a Gemfile, run "bundle install"
         if File.exist?('Gemfile')
-          bundle_cmd = Gem.bin_path('bundler', 'bundle')
-          system bundle_cmd, 'install', '.bundle', '--without', 'development', 'test'
+          system "#{app.ruby} -S -- bundle install .bundle --without development test"
         end
       end
     end
