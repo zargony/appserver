@@ -3,7 +3,7 @@ require 'etc'
 module Appserver
   class App < Struct.new(:server, :name, :branch, :ruby, :environment, :user, :group, :instances, :preload,
                          :env_whitelist, :env, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
-                         :hostname, :public_dir)
+                         :hostname, :ssl_cert, :ssl_key, :public_dir)
     include Utils
 
     DEFAULTS = {
@@ -21,6 +21,8 @@ module Appserver
       :usage_check_cycles => 5,
       :http_check_timeout => 30,
       :hostname => system_domainname,
+      :ssl_cert => nil,
+      :ssl_key => nil,
       :public_dir => 'public',
     }
 
@@ -155,6 +157,32 @@ module Appserver
         f.puts "  }"
         f.puts "  error_page 500 502 503 504 /500.html;"
         f.puts "}"
+        if ssl_cert && ssl_key
+          f.puts "server {"
+          f.puts "  listen 443;"
+          f.puts "  server_name #{hostname};"
+          f.puts "  ssl on;"
+          f.puts "  ssl_certificate #{ssl_cert};"
+          f.puts "  ssl_certificate_key #{ssl_key};"
+          f.puts "  ssl_session_timeout 5m;"
+          f.puts "  ssl_protocols SSLv2 SSLv3 TLSv1;"
+          f.puts "  ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;"
+          f.puts "  ssl_prefer_server_ciphers on;"
+          f.puts "  root #{expand_path(public_dir)};"
+          f.puts "  access_log #{expand_path(access_log)};"
+          # TODO: maintenance mode rewriting
+          f.puts "  try_files $uri/index.html $uri.html $uri @#{name};"
+          f.puts "  location @#{name} {"
+          f.puts "    proxy_set_header X-Real-IP $remote_addr;"
+          f.puts "    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
+          f.puts "    proxy_set_header X-Forwarded-Proto https;"
+          f.puts "    proxy_set_header Host $http_host;"
+          f.puts "    proxy_redirect off;"
+          f.puts "    proxy_pass http://#{name};"
+          f.puts "  }"
+          f.puts "  error_page 500 502 503 504 /500.html;"
+          f.puts "}"
+        end
       end
     end
 
