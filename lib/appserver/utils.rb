@@ -38,7 +38,7 @@ module Appserver
         yield tempfile
         tempfile.close
         File.unlink(filename) if File.exist?(filename)
-        File.rename(tempfile, filename)
+        File.rename(tempfile.path, filename)
       end
 
       def symbolize_keys (hash)

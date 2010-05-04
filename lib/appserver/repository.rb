@@ -63,13 +63,13 @@ module Appserver
 
         # Replace the current application directory with the newly built one
         FileUtils.rm_rf old_dir
-        FileUtils.mv app.dir, old_dir if Dir.exist?(app.dir)
+        FileUtils.mv app.dir, old_dir if File.exist?(app.dir)
         FileUtils.mv build_dir, app.dir
       ensure
         # If anything broke and the build directory still exists, remove it
         FileUtils.rm_rf build_dir
         # If anything broke and the app directory doesn't exist anymore, put the old directory in place
-        FileUtils.mv old_dir, app.dir if !Dir.exist?(app.dir) && Dir.exist?(old_dir)
+        FileUtils.mv old_dir, app.dir if !File.exist?(app.dir) && File.exist?(old_dir)
       end
     end
 
@@ -89,7 +89,7 @@ module Appserver
       ref = git.revparse(ref)
       git.checkout(ref)
       Dir.chdir(path) do
-        FileUtils.rm_r '.git'
+        FileUtils.rm_rf '.git'
         safe_replace_file 'REVISION' do |f|
           f.puts ref
         end
