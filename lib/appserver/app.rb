@@ -136,7 +136,7 @@ module Appserver
       f.puts ""
       f.puts "# Application: #{name}"
       if rack?
-        f.puts "upstream #{name}_cluster {"
+        f.puts "upstream #{name} {"
         f.puts "  server unix:#{expand_path(socket)} fail_timeout=0;"
         f.puts "}"
         f.puts "server {"
@@ -144,18 +144,16 @@ module Appserver
         f.puts "  server_name #{hostname};"
         f.puts "  root #{expand_path(public_dir)};"
         f.puts "  access_log #{expand_path(access_log)};"
-        f.puts "  location / {"
+        # TODO: maintenance mode rewriting
+        f.puts "  try_files $uri/index.html $uri.html $uri @#{name};"
+        f.puts "  location @#{name} {"
         f.puts "    proxy_set_header X-Real-IP $remote_addr;"
         f.puts "    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
         f.puts "    proxy_set_header Host $http_host;"
         f.puts "    proxy_redirect off;"
-        # TODO: maintenance mode rewriting
-        f.puts "    try_files $uri/index.html $uri.html $uri @#{name}_cluster;"
-        f.puts "    error_page 500 502 503 504 /500.html;"
+        f.puts "    proxy_pass http://#{name};"
         f.puts "  }"
-        f.puts "  location @#{name}_cluster {"
-        f.puts "    proxy_pass http://#{name}_cluster;"
-        f.puts "  }"
+        f.puts "  error_page 500 502 503 504 /500.html;"
         f.puts "}"
       end
     end
