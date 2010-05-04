@@ -107,6 +107,11 @@
 # to the system's domainname.
 #hostname: example.com
 
+# If a SSL certificate and key are set, Nginx will be configured to accept
+# HTTPS connections as well. The default is to only accept HTTP
+#ssl_cert: /etc/ssl/certs/mydomain.pem
+#ssl_key: /etc/ssl/private/mydomain.key
+
 # Path where public static files should be served from. Defaults to the public
 # directory in the application
 #public_dir: public
