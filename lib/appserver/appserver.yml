@@ -7,10 +7,6 @@
 # appserver directory is the directory, that contains this configuration file.
 #
 
-# Path to the default directory of git repositories that contain the
-# applications to deploy. Defaults to the home directory of the user 'git'
-#repo_dir: /var/git
-
 # Path/name of the Monit configuration snippet that should be written
 #monit_conf: monitrc
 
