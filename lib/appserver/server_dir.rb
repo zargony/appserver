@@ -1,11 +1,11 @@
 require 'yaml'
 
 module Appserver
-  class ServerDir < Struct.new(:dir, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload, :nginx_reopen, :logrotate_conf)
-    class AlreadyInitializedError < RuntimeError; end
-    class DirectoryNotEmptyError < RuntimeError; end
-    class NotInitializedError < RuntimeError; end
+  class AlreadyInitializedError < RuntimeError; end
+  class DirectoryNotEmptyError < RuntimeError; end
+  class NotInitializedError < RuntimeError; end
 
+  class ServerDir < Struct.new(:dir, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload, :nginx_reopen, :logrotate_conf)
     include Utils
 
     DEFAULTS = {
