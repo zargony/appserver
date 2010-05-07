@@ -2,9 +2,9 @@ require 'fileutils'
 require 'git'
 
 module Appserver
-  class Repository < Struct.new(:server, :dir)
-    class InvalidRepositoryError < RuntimeError; end
+  class InvalidRepositoryError < RuntimeError; end
 
+  class Repository < Struct.new(:server, :dir)
     include Utils
 
     def initialize (server, dir, config)
