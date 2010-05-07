@@ -17,17 +17,21 @@ module Appserver
 
       ServerDir.initialize_dir(options) if command == 'init'
 
-      server = ServerDir.new(options)
+      server_dir = ServerDir.new(options)
 
       case command
         when 'init'
-          server.write_configs
+          server_dir.write_configs
           puts 'Initialized appserver directory.'
           puts 'Wrote configuration snippets. Make sure to include them into your'
           puts 'system\'s Monit/Nginx/Logrotate configuration to become active.'
 
+        when 'update'
+          server_dir.write_configs
+          puts 'Wrote configuration snippets.'
+
         when 'deploy'
-          repository = server.repository(arguments[0])
+          repository = server_dir.repository(arguments[0])
           repository.install_hook
           # Second and third arguments are used by git update hooks and contain
           # the ref name and the new ref that just have been updated
@@ -39,10 +43,6 @@ module Appserver
           puts 'Deploying application...'
           repository.deploy(ref)
           puts 'Done.'
-
-        when 'update'
-          server.write_configs
-          puts 'Wrote configuration snippets.'
 
         else
           raise UnknownCommandError
