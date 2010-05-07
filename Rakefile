@@ -15,8 +15,17 @@ begin
     gem.add_dependency 'git', '~> 1.2'
     gem.add_dependency 'bundler', '>= 0.9.24'
     gem.has_rdoc = false
+    gem.add_development_dependency 'mocha'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
   puts 'Jeweler (or a dependency) not available. Install it with: gem install jeweler'
+end
+
+require 'rake/testtask'
+task :default => :test
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/**/test_*.rb'
+  test.verbose = true
 end
