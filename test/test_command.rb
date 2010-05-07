@@ -8,6 +8,8 @@ class TestCommand < Test::Unit::TestCase
     @repository = stub('repository', :app => @app)
     @server_dir = stub('server_dir', :repository => @repository)
     Appserver::ServerDir.stubs(:new => @server_dir)
+    # FIXME: This is currently needed to silence appserver output during tests :(
+    Appserver::Command.any_instance.stubs(:puts)
   end
 
   def test_unknown_command
