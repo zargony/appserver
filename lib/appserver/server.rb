@@ -1,8 +1,7 @@
-require 'etc'
 require 'yaml'
 
 module Appserver
-  class Server < Struct.new(:dir, :repo_dir, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload, :nginx_reopen, :logrotate_conf)
+  class Server < Struct.new(:dir, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload, :nginx_reopen, :logrotate_conf)
     class AlreadyInitializedError < RuntimeError; end
     class DirectoryNotEmptyError < RuntimeError; end
     class NotInitializedError < RuntimeError; end
@@ -10,7 +9,6 @@ module Appserver
     include Utils
 
     DEFAULTS = {
-      :repo_dir => (Etc.getpwnam('git') rescue {})[:dir],
       :monit_conf => 'monitrc',
       :monit_reload => '/usr/sbin/monit reload',
       :nginx_conf => 'nginx.conf',
@@ -86,14 +84,9 @@ module Appserver
         select { |app| app.startable? }
     end
 
-    def repository (name_or_path)
-      path = name_or_path =~ %r(/) ? expand_path(name_or_path) : File.expand_path("#{name_or_path}.git", repo_dir)
+    def repository (path)
       @repositories ||= {}
-      @repositories[path] ||= Repository.new(self, path, @config)
-    end
-
-    def repositories
-      Dir.glob(File.join(repo_dir, '*.git')).select { |f| File.directory?(f) }.map { |path| repository(path) }
+      @repositories[path] ||= Repository.new(self, expand_path(path), @config)
     end
 
     def write_configs
