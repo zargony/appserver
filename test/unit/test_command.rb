@@ -3,9 +3,9 @@ require 'helper'
 class TestCommand < Test::Unit::TestCase
 
   def setup
-    @app = stub('app', :branch => 'thebranch')
-    @repository = stub('repository', :app => @app)
-    @server_dir = stub('server_dir', :repository => @repository)
+    @app = stub('App', :branch => 'thebranch')
+    @repository = stub('Repository', :app => @app)
+    @server_dir = stub('ServerDir', :repository => @repository)
     Appserver::ServerDir.stubs(:discover => @server_dir)
     # FIXME: This is currently needed to silence appserver output during tests :(
     Appserver::Command.any_instance.stubs(:puts)
