@@ -1,5 +1,4 @@
 require 'helper'
-require 'appserver/server_dir'
 
 class TestServerDir < Test::Unit::TestCase
 

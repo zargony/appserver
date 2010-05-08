@@ -1,5 +1,4 @@
 require 'helper'
-require 'appserver/logrotate'
 
 class TestLogrotate < Test::Unit::TestCase
 
