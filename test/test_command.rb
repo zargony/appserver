@@ -20,13 +20,13 @@ class TestCommand < Test::Unit::TestCase
 
   def test_dir_option
     Dir.expects(:chdir).with('thedir')
-    Appserver::ServerDir.stubs(:initialize_dir)
+    Appserver::ServerDir.stubs(:init)
     @server_dir.stubs(:write_configs)
     Appserver::Command.run!('init', [], :dir => 'thedir')
   end
 
   def test_init
-    Appserver::ServerDir.expects(:initialize_dir)
+    Appserver::ServerDir.expects(:init)
     @server_dir.expects(:write_configs)
     Appserver::Command.run!('init', [])
   end

@@ -12,7 +12,7 @@ opts = OptionParser.new(nil, 20, '  ') do |opts|
   opts.separator 'appserver [options] init'
   opts.separator '  Initializes an appserver directory. Run this command once in an empty'
   opts.separator '  directory to set it up for deploying applications. After this, you can'
-  opts.separator '  customize settings in appserver.yml inside this directory.'
+  opts.separator "  customize settings in #{Appserver::ServerDir::CONFIG_FILE_NAME} inside this directory."
   opts.separator ''
   opts.separator 'appserver [options] update'
   opts.separator '  Updates all generated configuration files.'
