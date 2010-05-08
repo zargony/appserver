@@ -4,6 +4,7 @@ require 'test/unit'
 require 'mocha'
 
 require 'appserver'
+require 'tmpdir'
 
 class Test::Unit::TestCase
 
