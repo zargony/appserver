@@ -52,6 +52,10 @@ module Appserver
       DEFAULTS.each do |key, default_value|
         self[key] = @config[key] || default_value
       end
+      # Make sure configured paths are expanded
+      [:monit_conf, :nginx_conf, :logrotate_conf].each do |key|
+        self[key] = File.expand_path(self[key], path)
+      end
     end
 
     def config_file
