@@ -1,5 +1,4 @@
 require 'helper'
-require 'appserver/nginx'
 
 class TestNginx < Test::Unit::TestCase
 

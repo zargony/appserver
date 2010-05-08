@@ -3,7 +3,7 @@ require 'helper'
 class TestAppserver < Test::Unit::TestCase
 
   def appserver (*args)
-    cmd = File.expand_path('../../bin/appserver', __FILE__)
+    cmd = File.expand_path('../../../bin/appserver', __FILE__)
     bind = TOPLEVEL_BINDING.dup
     bind.eval("Object.send(:remove_const, :ARGV); ARGV = #{args.inspect}", __FILE__, __LINE__)
     bind.eval(File.read(cmd), cmd)

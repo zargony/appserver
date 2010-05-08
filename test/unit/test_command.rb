@@ -1,5 +1,4 @@
 require 'helper'
-require 'appserver/command'
 
 class TestCommand < Test::Unit::TestCase
 

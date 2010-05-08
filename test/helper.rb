@@ -2,11 +2,15 @@ require 'rubygems'
 require 'test/unit'
 require 'mocha'
 
-$LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
-$LOAD_PATH.unshift(File.expand_path('..', __FILE__))
 require 'appserver'
 
 class Test::Unit::TestCase
+
+  FIXTURES_PATH = File.expand_path('../fixtures', __FILE__)
+
+  def fixture (name)
+    File.join(FIXTURES_PATH, name)
+  end
 
   # Runs the given block in an empty, temporary direcory
   def in_empty_dir (&block)
@@ -27,6 +31,6 @@ class Test::Unit::TestCase
   # Creates a dummy rack app in the given path
   def create_dummy_rack_app (path)
     FileUtils.mkdir_p path
-    FileUtils.cp File.expand_path('../hello_world.ru', __FILE__), File.join(path, 'config.ru')
+    FileUtils.cp fixture('hello_world.ru'), File.join(path, 'config.ru')
   end
 end

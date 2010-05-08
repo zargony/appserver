@@ -1,5 +1,4 @@
 require 'helper'
-require 'appserver/monit'
 
 class TestMonit < Test::Unit::TestCase
 
