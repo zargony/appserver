@@ -128,15 +128,15 @@ module Appserver
     end
 
     def stop_cmd
-      "/bin/bash -c 'kill -TERM `cat #{pid_file}`'"
+      "kill -TERM `cat #{pid_file}`"
     end
 
     def reopen_cmd
-      "/bin/bash -c 'kill -USR1 `cat #{pid_file}`'"
+      "kill -USR1 `cat #{pid_file}`"
     end
 
     def restart_cmd
-      "/bin/bash -c 'kill -USR2 `cat #{pid_file}`'"
+      "kill -USR2 `cat #{pid_file}`"
     end
 
     def write_logrotate_config (f)
