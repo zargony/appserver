@@ -1,7 +1,7 @@
 require 'etc'
 
 module Appserver
-  class App < Struct.new(:server, :name, :branch, :ruby, :environment, :user, :group, :instances, :preload,
+  class App < Struct.new(:server_dir, :name, :branch, :ruby, :environment, :user, :group, :instances, :preload,
                          :env_whitelist, :env, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
                          :hostname, :ssl_cert, :ssl_key, :public_dir)
     include Utils
@@ -28,8 +28,8 @@ module Appserver
 
     ALWAYS_WHITELIST = ['PATH', 'PWD', 'GEM_HOME', 'GEM_PATH', 'RACK_ENV']
 
-    def initialize (server, name, config)
-      self.server, self.name = server, name
+    def initialize (server_dir, name, config)
+      self.server_dir, self.name = server_dir, name
       # Application-specific configuration settings
       appconfig = (config[:apps] || {})[name.to_sym] || {}
       DEFAULTS.each do |key, default_value|
@@ -44,7 +44,7 @@ module Appserver
     end
 
     def path
-      File.join(server.apps_path, name)
+      File.join(server_dir.apps_path, name)
     end
 
     def exist?
@@ -84,19 +84,19 @@ module Appserver
     end
 
     def pid_file
-      File.join(server.tmp_path, "#{name}.pid")
+      File.join(server_dir.tmp_path, "#{name}.pid")
     end
 
     def socket
-      File.join(server.tmp_path, "#{name}.socket")
+      File.join(server_dir.tmp_path, "#{name}.socket")
     end
 
     def server_log
-      File.join(server.log_path, "#{name}.server.log")
+      File.join(server_dir.log_path, "#{name}.server.log")
     end
 
     def access_log
-      File.join(server.log_path, "#{name}.access.log")
+      File.join(server_dir.log_path, "#{name}.access.log")
     end
 
     def setup_env!
