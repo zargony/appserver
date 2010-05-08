@@ -24,7 +24,21 @@ module Appserver
         f.puts "  if changed checksum then exec \"#{server_dir.nginx_reload}\""
         # Add application-specific Monit configuration
         server_dir.apps.each do |app|
-          app.write_monit_config(f)
+          f.puts ""
+          f.puts "# Application: #{app.name}"
+          if app.pid_file && app.start_cmd
+            cyclecheck = app.usage_check_cycles > 1 ? " for #{app.usage_check_cycles} cycles" : ''
+            f.puts "check process #{app.name} with pidfile #{app.pid_file}"
+            f.puts "  start program = \"#{app.start_cmd}\""
+            f.puts "  stop program = \"#{app.stop_cmd}\"" if app.stop_cmd
+            f.puts "  if totalcpu usage > #{app.max_cpu_usage}#{cyclecheck} then restart" if app.max_cpu_usage
+            f.puts "  if totalmemory usage > #{app.max_memory_usage}#{cyclecheck} then restart" if app.max_memory_usage
+            f.puts "  if failed unixsocket #{app.socket} protocol http request \"/\" timeout #{app.http_check_timeout} seconds then restart" if app.http_check_timeout > 0
+            f.puts "  if 5 restarts within 5 cycles then timeout"
+            f.puts "  group appserver"
+            f.puts "check file #{app.name}_revision with path #{app.revision_file}"
+            f.puts "  if changed checksum then exec \"#{app.restart_cmd}\""
+          end
         end
       end
     end

@@ -25,9 +25,48 @@ module Appserver
         f.puts "}"
         # Add application-specific Nginx configuration
         server_dir.apps.each do |app|
-          app.write_nginx_config(f)
+          f.puts ""
+          f.puts "# Application: #{app.name}"
+          if app.socket
+            f.puts "upstream #{app.name} {"
+            f.puts "  server unix:#{app.socket} fail_timeout=0;"
+            f.puts "}"
+            write_server_definition(f, app)
+            write_server_definition(f, app, true) if 1#app.ssl?
+          end
         end
       end
+    end
+
+  protected
+
+    def write_server_definition (f, app, ssl = false)
+      f.puts "server {"
+      f.puts "  listen #{ssl ? 443 : 80};"
+      f.puts "  server_name #{app.hostname};"
+      if ssl
+        f.puts "  ssl on;"
+        f.puts "  ssl_certificate #{app.ssl_cert};"
+        f.puts "  ssl_certificate_key #{app.ssl_key};"
+        f.puts "  ssl_session_timeout 5m;"
+        f.puts "  ssl_protocols SSLv2 SSLv3 TLSv1;"
+        f.puts "  ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;"
+        f.puts "  ssl_prefer_server_ciphers on;"
+      end
+      f.puts "  root #{app.public_path};"
+      f.puts "  access_log #{app.access_log};"
+      # TODO: maintenance mode rewriting
+      f.puts "  try_files $uri/index.html $uri.html $uri @#{app.name};"
+      f.puts "  location @#{app.name} {"
+      f.puts "    proxy_set_header X-Real-IP $remote_addr;"
+      f.puts "    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
+      f.puts "    proxy_set_header X-Forwarded-Proto https;" if ssl
+      f.puts "    proxy_set_header Host $http_host;"
+      f.puts "    proxy_redirect off;"
+      f.puts "    proxy_pass http://#{app.name};"
+      f.puts "  }"
+      f.puts "  error_page 500 502 503 504 /500.html;" if File.exist?(File.join(app.public_path, '500.html'))
+      f.puts "}"
     end
   end
 end

@@ -121,74 +121,22 @@ module Appserver
       end
     end
 
-    def write_monit_config (f)
-      f.puts %Q()
-      f.puts %Q(# Application: #{name})
+    def start_cmd
       if rack?
-        cyclecheck = usage_check_cycles > 1 ? " for #{usage_check_cycles} cycles" : ''
-        f.puts %Q(check process #{name} with pidfile #{pid_file})
-        f.puts %Q(  start program = "#{ruby} -S -- unicorn -E #{environment} -Dc #{unicorn_config} #{rack_config}")
-        f.puts %Q(  stop program = "/bin/bash -c 'kill -TERM `cat #{pid_file}`'")
-        f.puts %Q(  if totalcpu usage > #{max_cpu_usage}#{cyclecheck} then restart) if max_cpu_usage
-        f.puts %Q(  if totalmemory usage > #{max_memory_usage}#{cyclecheck} then restart) if max_memory_usage
-        f.puts %Q(  if failed unixsocket #{socket} protocol http request "/" timeout #{http_check_timeout} seconds then restart) if http_check_timeout > 0
-        f.puts %Q(  if 5 restarts within 5 cycles then timeout)
-        f.puts %Q(  group appserver)
-        f.puts %Q(check file #{name}_revision with path #{revision_file})
-        f.puts %Q(  if changed checksum then exec "/bin/bash -c 'kill -USR2 `cat #{pid_file}`'")
+        "#{ruby} -S -- unicorn -E #{environment} -Dc #{unicorn_config} #{rack_config}"
       end
     end
 
-    def write_nginx_config (f)
-      f.puts ""
-      f.puts "# Application: #{name}"
-      if rack?
-        f.puts "upstream #{name} {"
-        f.puts "  server unix:#{socket} fail_timeout=0;"
-        f.puts "}"
-        f.puts "server {"
-        f.puts "  listen 80;"
-        f.puts "  server_name #{hostname};"
-        f.puts "  root #{public_path};"
-        f.puts "  access_log #{access_log};"
-        # TODO: maintenance mode rewriting
-        f.puts "  try_files $uri/index.html $uri.html $uri @#{name};"
-        f.puts "  location @#{name} {"
-        f.puts "    proxy_set_header X-Real-IP $remote_addr;"
-        f.puts "    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
-        f.puts "    proxy_set_header Host $http_host;"
-        f.puts "    proxy_redirect off;"
-        f.puts "    proxy_pass http://#{name};"
-        f.puts "  }"
-        f.puts "  error_page 500 502 503 504 /500.html;"
-        f.puts "}"
-        if ssl_cert && ssl_key
-          f.puts "server {"
-          f.puts "  listen 443;"
-          f.puts "  server_name #{hostname};"
-          f.puts "  ssl on;"
-          f.puts "  ssl_certificate #{ssl_cert};"
-          f.puts "  ssl_certificate_key #{ssl_key};"
-          f.puts "  ssl_session_timeout 5m;"
-          f.puts "  ssl_protocols SSLv2 SSLv3 TLSv1;"
-          f.puts "  ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;"
-          f.puts "  ssl_prefer_server_ciphers on;"
-          f.puts "  root #{public_path};"
-          f.puts "  access_log #{access_log};"
-          # TODO: maintenance mode rewriting
-          f.puts "  try_files $uri/index.html $uri.html $uri @#{name};"
-          f.puts "  location @#{name} {"
-          f.puts "    proxy_set_header X-Real-IP $remote_addr;"
-          f.puts "    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;"
-          f.puts "    proxy_set_header X-Forwarded-Proto https;"
-          f.puts "    proxy_set_header Host $http_host;"
-          f.puts "    proxy_redirect off;"
-          f.puts "    proxy_pass http://#{name};"
-          f.puts "  }"
-          f.puts "  error_page 500 502 503 504 /500.html;"
-          f.puts "}"
-        end
-      end
+    def stop_cmd
+      "/bin/bash -c 'kill -TERM `cat #{pid_file}`'"
+    end
+
+    def reopen_cmd
+      "/bin/bash -c 'kill -USR1 `cat #{pid_file}`'"
+    end
+
+    def restart_cmd
+      "/bin/bash -c 'kill -USR2 `cat #{pid_file}`'"
     end
 
     def write_logrotate_config (f)
