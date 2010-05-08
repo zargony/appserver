@@ -87,7 +87,7 @@ class TestServerDir < Test::Unit::TestCase
 
   def test_app_creates_the_named_app_only_once
     in_server_dir do |server_dir|
-      Appserver::App.expects(:new).returns(mock('app')).once
+      Appserver::App.expects(:new).returns(stub('App')).once
       assert_not_nil server_dir.app('foo')
       assert_not_nil server_dir.app('foo')
     end
@@ -104,7 +104,7 @@ class TestServerDir < Test::Unit::TestCase
 
   def test_repository_creates_the_named_repository_only_once
     in_server_dir do |server_dir|
-      Appserver::Repository.expects(:new).returns(mock('repository')).once
+      Appserver::Repository.expects(:new).returns(stub('Repository')).once
       assert_not_nil server_dir.repository('/var/git/foo.git')
       assert_not_nil server_dir.repository('/var/git/foo.git')
     end
