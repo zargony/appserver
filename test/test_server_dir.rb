@@ -120,13 +120,10 @@ class TestServerDir < Test::Unit::TestCase
 
   def test_write_configs
     in_server_dir do |server_dir|
-      assert !File.exist?('monitrc')
-      assert !File.exist?('nginx.conf')
-      assert !File.exist?('logrotate.conf')
+      Appserver::Monit.expects(:write_config).with(server_dir)
+      Appserver::Nginx.expects(:write_config).with(server_dir)
+      Appserver::Logrotate.expects(:write_config).with(server_dir)
       server_dir.write_configs
-      assert File.exist?('monitrc')
-      assert File.exist?('nginx.conf')
-      assert File.exist?('logrotate.conf')
     end
   end
 end
