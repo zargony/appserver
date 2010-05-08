@@ -29,11 +29,9 @@ Setup
 ### Initialize an appserver directory
 
 To run applications, you need to initialize an appserver directory first. To
-do so, create an empty directory and run `appserver init` in it.
+do so, run `appserver init`.
 
-    $ mkdir /var/webapps
-    $ cd /var/webapps
-    $ appserver init
+    $ appserver init /var/webapps
 
 An appserver directory holds configuration files and everything needed to run
 multiple applications (application code, temp files, log files, ...). You can
@@ -66,7 +64,7 @@ configuration changes.
     ⋮
     include /var/webapps/monitrc
 
-### Activate generated Logrotate configuration
+### Optional: Activate generated Logrotate configuration
 
 Modify your system's Logrotate configuration (e.g. `/etc/logrotate.conf` on
 Ubuntu) to include the generated `logrotate.conf` at the bottom. Logrotate
