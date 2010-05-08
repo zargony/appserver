@@ -138,20 +138,5 @@ module Appserver
     def restart_cmd
       "kill -USR2 `cat #{pid_file}`"
     end
-
-    def write_logrotate_config (f)
-      f.puts ""
-      f.puts "# Application: #{name}"
-      if rack?
-        f.puts "#{server_log} {"
-        f.puts "  missingok"
-        f.puts "  delaycompress"
-        f.puts "  sharedscripts"
-        f.puts "  postrotate"
-        f.puts "    kill -USR1 `cat #{pid_file}`"
-        f.puts "  endscript"
-        f.puts "}"
-      end
-    end
   end
 end
