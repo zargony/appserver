@@ -55,6 +55,10 @@ module Appserver
       File.join(path, 'REVISION')
     end
 
+    def ssl?
+      ssl_cert && ssl_key
+    end
+
     def public_path
       File.expand_path(public_dir, path)
     end
