@@ -84,8 +84,7 @@ module Appserver
         select { |f| File.directory?(f) }.
         map { |f| File.basename(f) }.
         reject { |f| f =~ /\.(tmp|old|new)$/ }.
-        map { |name| app(name) }.
-        select { |app| app.startable? }
+        map { |name| app(name) }
     end
 
     def repository (path)

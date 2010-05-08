@@ -71,10 +71,6 @@ module Appserver
       File.exist?(rack_config)
     end
 
-    def startable?
-      rack?
-    end
-
     def unicorn_config
       File.expand_path('../unicorn.conf.rb', __FILE__)
     end
