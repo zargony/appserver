@@ -15,7 +15,7 @@ module Appserver
     def run!
       Dir.chdir(options[:dir]) if options[:dir]
 
-      ServerDir.init(options) if command == 'init'
+      ServerDir.init(arguments[0], options) if command == 'init'
 
       server_dir = ServerDir.new(options)
 

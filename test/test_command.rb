@@ -26,9 +26,9 @@ class TestCommand < Test::Unit::TestCase
   end
 
   def test_init
-    Appserver::ServerDir.expects(:init)
+    Appserver::ServerDir.expects(:init).with('thedir', {})
     @server_dir.expects(:write_configs)
-    Appserver::Command.run!('init', [])
+    Appserver::Command.run!('init', ['thedir'])
   end
 
   def test_update

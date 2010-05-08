@@ -2,8 +2,7 @@ require 'fileutils'
 require 'yaml'
 
 module Appserver
-  class AlreadyInitializedError < RuntimeError; end
-  class DirectoryNotEmptyError < RuntimeError; end
+  class DirectoryAlreadyExistError < RuntimeError; end
   class NotInitializedError < RuntimeError; end
 
   class ServerDir < Struct.new(:path, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload, :nginx_reopen, :logrotate_conf)
@@ -35,10 +34,9 @@ module Appserver
     end
 
     def self.init (path, options = {})
-      raise AlreadyInitializedError if discover(path) && !options[:force]
+      raise DirectoryAlreadyExistError if File.exist?(path) && !options[:force]
       FileUtils.mkdir_p path
       Dir.chdir(path) do
-        raise DirectoryNotEmptyError if Dir.glob('*') != [] && !options[:force]
         FileUtils.cp config_file_template, CONFIG_FILE_NAME
         FileUtils.mkdir_p ['apps', 'tmp', 'log']
       end

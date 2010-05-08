@@ -20,7 +20,7 @@ class Test::Unit::TestCase
   # Runs the given block in an initialized appserver directory
   def in_server_dir (&block)
     in_empty_dir do
-      yield Appserver::ServerDir.init('.')
+      yield Appserver::ServerDir.init('.', :force => true)
     end
   end
 

@@ -11,7 +11,7 @@ class TestServerDir < Test::Unit::TestCase
 
   def test_discover_finds_current_dir
     in_empty_dir do
-      Appserver::ServerDir.init('.')
+      Appserver::ServerDir.init('.', :force => true)
       server_dir = Appserver::ServerDir.discover
       assert_kind_of Appserver::ServerDir, server_dir
       assert_equal Dir.pwd, server_dir.path
@@ -20,7 +20,7 @@ class TestServerDir < Test::Unit::TestCase
 
   def test_discover_finds_parent_dir
     in_empty_dir do
-      Appserver::ServerDir.init('.')
+      Appserver::ServerDir.init('.', :force => true)
       Dir.mkdir('foo')
       Dir.chdir('foo') do
         server_dir = Appserver::ServerDir.discover
@@ -32,7 +32,7 @@ class TestServerDir < Test::Unit::TestCase
 
   def test_init_creates_config_file_and_subdirs
     in_empty_dir do
-      assert_kind_of Appserver::ServerDir, Appserver::ServerDir.init('.')
+      assert_kind_of Appserver::ServerDir, Appserver::ServerDir.init('.', :force => true)
       assert File.exist?(Appserver::ServerDir::CONFIG_FILE_NAME)
       assert File.directory?('apps')
       assert File.directory?('tmp')
@@ -48,29 +48,20 @@ class TestServerDir < Test::Unit::TestCase
     end
   end
 
-  def test_init_fails_if_not_empty
+  def test_init_fails_if_directory_exists
     in_empty_dir do
-      FileUtils.touch 'foobar.txt'
-      assert_raise Appserver::DirectoryNotEmptyError do
-        Appserver::ServerDir.init('.')
+      Dir.mkdir('foo')
+      assert_raise Appserver::DirectoryAlreadyExistError do
+        Appserver::ServerDir.init('foo')
       end
     end
   end
 
-  def test_init_fails_if_already_initialized
+  def test_init_works_if_directory_exists_but_forced
     in_empty_dir do
-      Appserver::ServerDir.init('.')
-      assert_raise Appserver::AlreadyInitializedError do
-        Appserver::ServerDir.init('.')
-      end
-    end
-  end
-
-  def test_init_works_if_already_initialized_but_forced
-    in_empty_dir do
-      Appserver::ServerDir.init('.')
+      Appserver::ServerDir.init('foo')
       assert_nothing_raised do
-        assert_kind_of Appserver::ServerDir, Appserver::ServerDir.init('.', :force => true)
+        assert_kind_of Appserver::ServerDir, Appserver::ServerDir.init('foo', :force => true)
       end
     end
   end
