@@ -138,5 +138,12 @@ module Appserver
     def restart_cmd
       "kill -USR2 `cat #{pid_file}`"
     end
+
+    def log_reopen_cmds
+      {
+        server_log => reopen_cmd,
+        access_log => server_dir.nginx_reopen,
+      }
+    end
   end
 end
