@@ -9,10 +9,10 @@ options = {}
 opts = OptionParser.new(nil, 20, '  ') do |opts|
   opts.banner = 'Usage: appserver [options] init|deploy|update [arguments]'
   opts.separator ''
-  opts.separator 'appserver [options] init'
-  opts.separator '  Initializes an appserver directory. Run this command once in an empty'
-  opts.separator '  directory to set it up for deploying applications. After this, you can'
-  opts.separator "  customize settings in #{Appserver::ServerDir::CONFIG_FILE_NAME} inside this directory."
+  opts.separator 'appserver [options] init <path>'
+  opts.separator '  Initializes an appserver directory. Run this command to set up the given'
+  opts.separator '  directory for deploying applications. After this, you can customize'
+  opts.separator "  settings in #{Appserver::ServerDir::CONFIG_FILE_NAME} inside the directory."
   opts.separator ''
   opts.separator 'appserver [options] update'
   opts.separator '  Updates all generated configuration files.'
@@ -21,6 +21,9 @@ opts = OptionParser.new(nil, 20, '  ') do |opts|
   opts.separator '  Deploys an application to the appserver directory and updates configurations.'
   opts.separator '  Additionally, a hook is installed to the git repository, that auto-deploys'
   opts.separator '  the application from now on, if sombody pushes to it.'
+  opts.separator ''
+  opts.separator 'NOTE: For all commands (except "init"), you need to be inside an appserver'
+  opts.separator '      directory, or specify an appserver directory using the --dir option.'
   opts.separator ''
   opts.separator 'Options:'
   opts.on '-d', '--dir PATH', 'Change to the given directory before running the command' do |dir|
