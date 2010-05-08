@@ -29,7 +29,7 @@ module Appserver
       elsif path != '/'
         discover(File.expand_path('..', path), options)
       else
-        nil
+        raise NotInitializedError
       end
     end
 

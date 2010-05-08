@@ -7,7 +7,7 @@ class TestCommand < Test::Unit::TestCase
     @app = stub('app', :branch => 'thebranch')
     @repository = stub('repository', :app => @app)
     @server_dir = stub('server_dir', :repository => @repository)
-    Appserver::ServerDir.stubs(:new => @server_dir)
+    Appserver::ServerDir.stubs(:discover => @server_dir)
     # FIXME: This is currently needed to silence appserver output during tests :(
     Appserver::Command.any_instance.stubs(:puts)
   end
@@ -20,15 +20,20 @@ class TestCommand < Test::Unit::TestCase
 
   def test_dir_option
     Dir.expects(:chdir).with('thedir')
-    Appserver::ServerDir.stubs(:init)
     @server_dir.stubs(:write_configs)
-    Appserver::Command.run!('init', [], :dir => 'thedir')
+    Appserver::Command.run!('update', [], :dir => 'thedir')
   end
 
   def test_init
     Appserver::ServerDir.expects(:init).with('thedir', {})
     @server_dir.expects(:write_configs)
     Appserver::Command.run!('init', ['thedir'])
+  end
+
+  def test_command_discovers
+    Appserver::ServerDir.expects(:discover).returns(@server_dir)
+    @server_dir.expects(:write_configs)
+    Appserver::Command.run!('update', [])
   end
 
   def test_update

@@ -3,9 +3,11 @@ require 'appserver/server_dir'
 
 class TestServerDir < Test::Unit::TestCase
 
-  def test_discover_returns_nil_if_not_found
+  def test_discover_raises_error_if_not_found
     in_empty_dir do
-      assert_nil Appserver::ServerDir.discover
+      assert_raise Appserver::NotInitializedError do
+        Appserver::ServerDir.discover
+      end
     end
   end
 

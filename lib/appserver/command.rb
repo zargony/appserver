@@ -17,7 +17,7 @@ module Appserver
 
       ServerDir.init(arguments[0], options) if command == 'init'
 
-      server_dir = ServerDir.new(options)
+      server_dir = ServerDir.discover
 
       case command
         when 'init'
