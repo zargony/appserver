@@ -46,7 +46,9 @@ module Appserver
     def initialize (path, options = {})
       self.path = File.expand_path(path)
       # Load and apply configuration settings
-      @config = Configurator.new(File.exist?(config_file) ? config_file : nil)
+      app_keys = App::SETTINGS_DEFAULTS.keys
+      global_keys = SETTINGS_DEFAULTS.keys + App::SETTINGS_DEFAULTS.keys
+      @config = Configurator.new(File.exist?(config_file) ? config_file : nil, global_keys, app_keys)
       @config.apply!(self)
     end
 
