@@ -6,7 +6,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = 'appserver'
     gem.summary = 'Monit/Nginx/Unicorn application server configurator using deployment via git'
-    gem.description = 'This little tool automatically generates server configs for Monit, Nginx and Unicorn to host your Rack-based (Rails) applications. Running it automatically in git update hooks provides an automatic deployment of applications whenever the repository is updated on the server.'
+    gem.description = 'This tool automatically generates server configs for Monit, Nginx and Unicorn to host your Rack-based (Rails) applications. Running it automatically in git update hooks provides an automatic deployment of applications whenever the repository is updated on the server.'
     gem.email = 'zargony@gmail.com'
     gem.homepage = 'http://github.com/zargony/appserver'
     gem.authors = ['Andreas Neuhaus']
