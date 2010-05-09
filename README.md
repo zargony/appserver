@@ -35,7 +35,7 @@ do so, run `appserver init`.
 
 An appserver directory holds configuration files and everything needed to run
 multiple applications (application code, temp files, log files, ...). You can
-customize settings by editing the `appserver.yml` configuration file. **All
+customize settings by editing the `appserver.conf.rb` configuration file. **All
 other files are updated automatically and should not be modified manually.**
 
 ### Activate generated Nginx configuration

@@ -3,10 +3,10 @@ require 'etc'
 module Appserver
   class App < Struct.new(:server_dir, :name, :branch, :ruby, :environment, :user, :group, :instances, :preload,
                          :env_whitelist, :env, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
-                         :hostname, :ssl_cert, :ssl_key, :public_dir)
+                         :domain, :hostname, :ssl_cert, :ssl_key, :public_dir)
     include Utils
 
-    DEFAULTS = {
+    SETTINGS_DEFAULTS = {
       :branch => 'master',
       :ruby => find_in_path('ruby') || '/usr/bin/ruby',
       :environment => 'production',
@@ -20,27 +20,25 @@ module Appserver
       :max_memory_usage => nil,
       :usage_check_cycles => 5,
       :http_check_timeout => 30,
-      :hostname => system_domainname,
+      :domain => system_domainname,
+      :hostname => nil,
       :ssl_cert => nil,
       :ssl_key => nil,
       :public_dir => 'public',
     }
 
+    SETTINGS_EXPAND = [ :ssl_cert, :ssl_key ]
+
     ALWAYS_WHITELIST = ['PATH', 'PWD', 'GEM_HOME', 'GEM_PATH', 'RACK_ENV']
 
     def initialize (server_dir, name, config)
       self.server_dir, self.name = server_dir, name
-      # Application-specific configuration settings
-      appconfig = (config[:apps] || {})[name.to_sym] || {}
-      DEFAULTS.each do |key, default_value|
-        self[key] = appconfig[key] || config[key] || default_value
-      end
+      # Apply configuration settings
+      config.apply!(self, name)
       # Use the directory owner as the user to run instances under by default
       self.user ||= exist? ? Etc.getpwuid(File.stat(path).uid).name : 'www-data'
-      # Make array from comma separated list
-      self.env_whitelist = env_whitelist.split(/\s*,\s*/) if String === env_whitelist
-      # Use a subdomain of the default hostname if no hostname was given specifically for this app
-      self.hostname = "#{name.gsub(/[^a-z0-9_-]+/i, '_')}.#{hostname}" unless appconfig[:hostname]
+      # Use a subdomain if no hostname was given specifically for this app
+      self.hostname ||= "#{name.gsub(/[^a-z0-9_-]+/i, '_')}.#{domain}"
     end
 
     def path
@@ -101,7 +99,7 @@ module Appserver
 
     def setup_env!
       # Apply whitelist if set
-      if env_whitelist != ['*']
+      if env_whitelist != '*' && env_whitelist != ['*']
         ENV.reject! { |key, value| !env_whitelist.include?(key) && !ALWAYS_WHITELIST.include?(key) }
       end
       # Set environment variables
