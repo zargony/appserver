@@ -32,7 +32,7 @@ module Appserver
             f.puts "  server unix:#{app.socket} fail_timeout=0;"
             f.puts "}"
             write_server_definition(f, app)
-            write_server_definition(f, app, true) if 1#app.ssl?
+            write_server_definition(f, app, true) if app.ssl?
           end
         end
       end
