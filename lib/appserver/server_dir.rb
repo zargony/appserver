@@ -1,16 +1,14 @@
 require 'fileutils'
-require 'yaml'
 
 module Appserver
   class DirectoryAlreadyExistError < RuntimeError; end
   class NotInitializedError < RuntimeError; end
 
   class ServerDir < Struct.new(:path, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload, :nginx_reopen, :logrotate_conf)
-    include Utils
 
-    CONFIG_FILE_NAME = 'appserver.yml'
+    CONFIG_FILE_NAME = 'appserver.conf.rb'
 
-    DEFAULTS = {
+    SETTINGS_DEFAULTS = {
       :monit_conf => 'monitrc',
       :monit_reload => '/usr/sbin/monit reload',
       :nginx_conf => 'nginx.conf',
@@ -18,6 +16,8 @@ module Appserver
       :nginx_reopen => '/usr/sbin/nginx -s reopen',
       :logrotate_conf => 'logrotate.conf',
     }
+
+    SETTINGS_EXPAND = [ :monit_conf, :nginx_conf, :logrotate_conf ]
 
     def self.config_file_template
       File.expand_path("../#{CONFIG_FILE_NAME}", __FILE__)
@@ -45,15 +45,9 @@ module Appserver
 
     def initialize (path, options = {})
       self.path = File.expand_path(path)
-      # Load configuration settings
-      @config = File.exist?(config_file) ? symbolize_keys(YAML.load_file(config_file) || {}) : {}
-      DEFAULTS.each do |key, default_value|
-        self[key] = @config[key] || default_value
-      end
-      # Make sure configured paths are expanded
-      [:monit_conf, :nginx_conf, :logrotate_conf].each do |key|
-        self[key] = File.expand_path(self[key], path)
-      end
+      # Load and apply configuration settings
+      @config = Configurator.new(File.exist?(config_file) ? config_file : nil)
+      @config.apply!(self)
     end
 
     def config_file
