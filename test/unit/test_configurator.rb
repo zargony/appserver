@@ -24,10 +24,14 @@ class TestConfigurator < Test::Unit::TestCase
     SETTINGS_EXPAND = []
   end
 
-  def setup
+  def configurator (config_text, *args)
     config_file = '/tmp/some/path/test.conf.rb'
-    File.stubs(:read).with(config_file).returns(CONFIG_TEXT)
-    @config = Appserver::Configurator.new(config_file)
+    File.stubs(:read).with(config_file).returns(config_text)
+    Appserver::Configurator.new(config_file, *args)
+  end
+
+  def setup
+    @config = configurator(CONFIG_TEXT)
   end
 
   def test_default_setting
@@ -78,5 +82,36 @@ class TestConfigurator < Test::Unit::TestCase
     assert_equal '/tmp/some/path/bob', target.beta
     assert_equal '/tmp/some/path/ccc', target.gamma
     assert_equal 'ddd', target.delta
+  end
+
+  def test_any_setting_is_possible_by_default
+    config = configurator("alpha 'anna'; beta 'bob'")
+    config.apply!(target = ConfigTarget.new)
+    assert_equal 'anna', target.alpha
+    assert_equal 'bob', target.beta
+  end
+
+  def test_allowed_global_settings
+    assert_nothing_raised do
+      configurator("alpha 'anna'; beta 'bob'", [ :alpha, :beta ])
+    end
+  end
+
+  def test_allowed_global_settings_fail_on_invalid_setting
+    assert_raise NoMethodError do
+      configurator("alpha 'anna'; beta 'bob'", [ :alpha ])
+    end
+  end
+
+  def test_allowed_context_settings
+    assert_nothing_raised do
+      configurator("context 'foo' do; alpha 'anna'; beta 'bob'; end", nil, [ :alpha, :beta ])
+    end
+  end
+
+  def test_allowed_context_settings_fail_on_invalid_setting
+    assert_raise NoMethodError do
+      configurator("context 'foo' do; alpha 'anna'; beta 'bob'; end", nil, [ :alpha ])
+    end
   end
 end

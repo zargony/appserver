@@ -1,8 +1,10 @@
 module Appserver
-  class Configurator < Struct.new(:settings)
+  class Configurator < Struct.new(:settings, :global_keys, :context_keys)
 
-    def initialize (config_file)
+    def initialize (config_file, global_keys = nil, context_keys = nil)
       self.settings = {}
+      self.global_keys = global_keys
+      self.context_keys = context_keys
       instance_eval(File.read(config_file), config_file) if config_file
     end
 
@@ -27,9 +29,10 @@ module Appserver
   protected
 
     def method_missing (method, *args)
+      return super if !@context && global_keys && !global_keys.include?(method)
+      return super if @context && context_keys && !context_keys.include?(method)
       self.settings[@context] ||= {}
-      self.settings[@context][method] = args[0]
-      # TODO: raise error on unknown setting
+      self.settings[@context][method] = args[0] if args.size > 0
     end
   end
 end
