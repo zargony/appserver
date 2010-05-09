@@ -1,5 +1,4 @@
 require 'helper'
-require 'ostruct'
 
 class TestConfigurator < Test::Unit::TestCase
 
