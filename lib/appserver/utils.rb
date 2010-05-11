@@ -6,7 +6,11 @@ module Appserver
 
     class << self
       def find_in_path (name)
-        ENV['PATH'].split(':').find { |path| File.exist?(File.join(path, name)) }
+        ENV['PATH'].split(':').each do |path|
+          fn = File.join(path, name)
+          return fn if File.executable?(fn)
+        end
+        nil
       end
 
       def system_hostname
