@@ -4,15 +4,14 @@ module Appserver
   class App < Struct.new(:server_dir, :name, :branch, :ruby, :environment, :user, :group, :instances, :preload,
                          :env_whitelist, :env, :max_cpu_usage, :max_memory_usage, :usage_check_cycles, :http_check_timeout,
                          :domain, :hostname, :ssl_cert, :ssl_key, :public_dir)
-    include Utils
 
     SETTINGS_DEFAULTS = {
       :branch => 'master',
-      :ruby => find_in_path('ruby') || '/usr/bin/ruby',
+      :ruby => Utils.find_in_path('ruby') || '/usr/bin/ruby',
       :environment => 'production',
       :user => nil,
       :group => nil,
-      :instances => number_of_cpus || 1,
+      :instances => Utils.number_of_cpus || 1,
       :preload => false,
       :env_whitelist => [],
       :env => {},
@@ -20,7 +19,7 @@ module Appserver
       :max_memory_usage => nil,
       :usage_check_cycles => 5,
       :http_check_timeout => 30,
-      :domain => system_domainname,
+      :domain => Utils.system_domainname,
       :hostname => nil,
       :ssl_cert => nil,
       :ssl_key => nil,

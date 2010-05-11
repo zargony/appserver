@@ -5,7 +5,6 @@ module Appserver
   class InvalidRepositoryError < RuntimeError; end
 
   class Repository < Struct.new(:server, :dir)
-    include Utils
 
     def initialize (server, dir, config)
       self.server, self.dir = server, dir.chomp('/')
@@ -35,7 +34,7 @@ module Appserver
       deploy_cmd = "#{File.expand_path($0)} -d #{server.dir} deploy"
       if !File.exist?(update_hook) || !File.executable?(update_hook)
         puts "Installing git update hook to repository #{dir}..."
-        safe_replace_file(update_hook) do |f|
+        Utils.safe_replace_file(update_hook) do |f|
           f.puts '#!/bin/sh'
           f.puts "#{deploy_cmd} #{dir} $1 $3"
           f.chown File.stat(dir).uid, File.stat(dir).gid
@@ -90,7 +89,7 @@ module Appserver
       git.checkout(ref)
       Dir.chdir(path) do
         FileUtils.rm_rf '.git'
-        safe_replace_file 'REVISION' do |f|
+        Utils.safe_replace_file 'REVISION' do |f|
           f.puts ref
         end
       end
