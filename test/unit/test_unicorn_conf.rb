@@ -26,4 +26,33 @@ class TestUnicornConf < Test::Unit::TestCase
     end
   end
 
+  def wait_unicorn_ready (app)
+    50.times do
+      return if File.exist?(app.server_log) && File.readlines(app.server_log).grep(/master process ready/)[0]
+      sleep 0.2
+    end
+    raise 'Unicorn did not become ready'
+  end
+
+  def assert_shutdown (pid)
+    assert_nothing_raised { Process.kill(:TERM, pid) }
+    status = nil
+    assert_nothing_raised { pid, status = Process.waitpid2(pid) }
+    assert status.success?, 'exited successfully'
+  end
+
+  def test_unicorn_server
+    in_server_dir do |server_dir|
+      create_dummy_rack_app('apps/hello')
+      app = server_dir.app('hello')
+      pid = fork { exec app.start_cmd }
+      wait_unicorn_ready(app)
+      UNIXSocket.open(app.socket) do |s|
+        s.write "GET / HTTP/1.1\r\n\r\n"
+        response = s.readlines
+        assert_match /^HTTP\/1.1 200 /, response[0]
+      end
+      assert_shutdown(pid)
+    end
+  end
 end
