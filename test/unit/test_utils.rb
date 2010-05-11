@@ -11,6 +11,13 @@ class TestUtils < Test::Unit::TestCase
     Appserver::Utils.send(:remove_const, :ENV)
   end
 
+  def test_find_in_path_fails
+    Appserver::Utils.send(:const_set, :ENV, 'PATH' => '/some/where/bin:/no/where/bin:/home/foo/bin')
+    File.expects(:executable?).returns(false).at_least_once
+    assert_nil Appserver::Utils.find_in_path('theapp')
+    Appserver::Utils.send(:remove_const, :ENV)
+  end
+
   def test_system_hostname
     Socket.expects(:gethostname).returns('foo.bar.net')
     assert_equal 'foo.bar.net', Appserver::Utils.system_hostname
