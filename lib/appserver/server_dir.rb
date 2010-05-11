@@ -56,6 +56,11 @@ module Appserver
       File.join(path, CONFIG_FILE_NAME)
     end
 
+    def appserver_cmd (*args)
+      cmd = File.expand_path('../../../bin/appserver', __FILE__)
+      "#{cmd} -d #{path} #{args.join(' ')}"
+    end
+
     def apps_path
       File.join(path, 'apps')
     end
