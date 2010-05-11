@@ -3,14 +3,8 @@ require 'tempfile'
 
 module Appserver
   module Utils
-    def self.included (base)
-      base.class_eval do
-        extend Methods
-        include Methods
-      end
-    end
 
-    module Methods
+    class << self
       def find_in_path (name)
         ENV['PATH'].split(':').find { |path| File.exist?(File.join(path, name)) }
       end
