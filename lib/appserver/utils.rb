@@ -34,14 +34,6 @@ module Appserver
         File.unlink(filename) if File.exist?(filename)
         File.rename(tempfile.path, filename)
       end
-
-      def symbolize_keys (hash)
-        hash.inject({}) do |memo, (key, value)|
-          value = symbolize_keys(value) if Hash === value
-          memo[key.to_sym] = value
-          memo
-        end
-      end
     end
   end
 end
