@@ -1,9 +1,9 @@
 require File.expand_path('../../appserver', __FILE__)
-# We assume that the last argument to unicorn is the full path to config.ru
-Dir.chdir(File.expand_path('..', Unicorn::HttpServer::START_CTX[:argv][-1]))
-app = Appserver::ServerDir.discover.app(File.basename(Dir.pwd))
+# We assume that the last argument to unicorn is the full path to the app's config.ru
+app_path = File.dirname(Unicorn::HttpServer::START_CTX[:argv][-1])
+app = Appserver::ServerDir.discover(app_path).app(File.basename(app_path))
 
-working_directory app.dir
+working_directory app.path
 stderr_path app.server_log
 stdout_path app.server_log
 app.setup_env!
