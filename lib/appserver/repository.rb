@@ -31,7 +31,7 @@ module Appserver
     end
 
     def install_hook
-      deploy_cmd = "#{File.expand_path($0)} -d #{server_dir.path} deploy"
+      deploy_cmd = server_dir.appserver_cmd('deploy')
       if !File.exist?(update_hook) || !File.executable?(update_hook)
         puts "Installing git update hook to repository #{path}..."
         Utils.safe_replace_file(update_hook) do |f|
