@@ -47,6 +47,22 @@ module Appserver
           repository.deploy(ref)
           puts 'Done.'
 
+        when 'start'
+          app = server_dir.app(arguments[0])
+          app.start_server
+
+        when 'stop'
+          app = server_dir.app(arguments[0])
+          app.stop_server
+
+        when 'restart'
+          app = server_dir.app(arguments[0])
+          app.restart_server
+
+        when 'reopen'
+          app = server_dir.app(arguments[0])
+          app.reopen_server_log
+
         else
           raise UnknownCommandError
       end

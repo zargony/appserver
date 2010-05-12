@@ -45,7 +45,7 @@ class TestUnicornConf < Test::Unit::TestCase
     in_server_dir do |server_dir|
       create_dummy_rack_app('apps/hello')
       app = server_dir.app('hello')
-      pid = fork { exec app.start_cmd }
+      pid = fork { app.start_server }
       wait_unicorn_ready(app)
       UNIXSocket.open(app.socket) do |s|
         s.write "GET / HTTP/1.1\r\n\r\n"
