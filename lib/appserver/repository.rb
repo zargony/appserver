@@ -8,7 +8,7 @@ module Appserver
   class Repository < Struct.new(:server_dir, :path)
 
     def initialize (server_dir, path, config)
-      self.server_dir, self.path = server_dir, path.chomp('/')
+      self.server_dir, self.path = server_dir, File.expand_path(path)
       raise InvalidRepositoryError unless valid?
     end
 
