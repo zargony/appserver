@@ -6,7 +6,7 @@ class TestUnicornConf < Test::Unit::TestCase
 
   def test_unicorn_configuration
     in_server_dir do |server_dir|
-      create_dummy_rack_app('apps/hello')
+      create_app('rack-simple', 'apps/hello')
       app = server_dir.app('hello')
       Appserver::App.any_instance.expects(:user => Etc.getlogin).at_least_once
       Appserver::App.any_instance.expects(:setup_env!)
@@ -43,7 +43,7 @@ class TestUnicornConf < Test::Unit::TestCase
 
   def test_unicorn_server
     in_server_dir do |server_dir|
-      create_dummy_rack_app('apps/hello')
+      create_app('rack-simple', 'apps/hello')
       app = server_dir.app('hello')
       pid = fork { app.start_server }
       wait_unicorn_ready(app)

@@ -8,11 +8,7 @@ require 'tmpdir'
 
 class Test::Unit::TestCase
 
-  FIXTURES_PATH = File.expand_path('../fixtures', __FILE__)
-
-  def fixture (name)
-    File.join(FIXTURES_PATH, name)
-  end
+  SAMPLE_APPS_PATH = File.expand_path('../apps', __FILE__)
 
   # Runs the given block in an empty, temporary direcory
   def in_empty_dir (&block)
@@ -30,9 +26,10 @@ class Test::Unit::TestCase
     end
   end
 
-  # Creates a dummy rack app in the given path
-  def create_dummy_rack_app (path)
-    FileUtils.mkdir_p path
-    FileUtils.cp fixture('hello_world.ru'), File.join(path, 'config.ru')
+  # Copies the named sample app to the given path
+  def create_app (name, path)
+    raise 'Target path already exist' if File.exist?(path)
+    FileUtils.cp_r File.join(SAMPLE_APPS_PATH, name), path
+  end
   end
 end
