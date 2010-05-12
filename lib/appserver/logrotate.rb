@@ -35,7 +35,7 @@ module Appserver
             f.puts "  delaycompress"
             f.puts "  sharedscripts"
             f.puts "  postrotate"
-            f.puts "    #{server_dir.appserver_cmd('reload', app.name)}"
+            f.puts "    #{server_dir.appserver_cmd('reopen', app.name)}"
             f.puts "  endscript"
             f.puts "}"
           end
