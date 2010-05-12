@@ -74,10 +74,6 @@ module Appserver
 
   protected
 
-    def expand_path (path)
-      File.expand_path(path, dir)
-    end
-
     def checkout (target_path, ref = 'master')
       # There seem to be two ways to "export" the tip of a branch from a repository
       # 1. clone the repository, check out the branch and remove the .git directory afterwards
