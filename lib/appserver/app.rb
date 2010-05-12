@@ -118,24 +118,34 @@ module Appserver
       end
     end
 
-    def start_cmd
+    def start_server_cmd
       if rack?
         "#{ruby} -S -- unicorn -E #{environment} -Dc #{unicorn_config} #{rack_config}"
       end
     end
 
-    def stop_cmd
-      "kill -TERM `cat #{pid_file}`"
+    def start_server?
+      !!start_server_cmd
     end
 
-    def reopen_cmd
-      "kill -USR1 `cat #{pid_file}`"
+    def start_server
+      exec start_server_cmd if start_server?
     end
 
-    def restart_cmd
-      "kill -USR2 `cat #{pid_file}`"
+    def server_pid
+      File.readlines(pid_file)[0].to_i rescue nil
     end
 
+    def stop_server
+      Process.kill(:TERM, server_pid)
+    end
+
+    def restart_server
+      Process.kill(:USR2, server_pid)
+    end
+
+    def reopen_server_log
+      Process.kill(:USR1, server_pid)
     end
   end
 end
