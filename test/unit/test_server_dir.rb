@@ -96,7 +96,7 @@ class TestServerDir < Test::Unit::TestCase
   def test_apps_returns_apps_for_every_normal_dir
     in_server_dir do |server_dir|
       ['apps/foo', 'apps/bar', 'apps/bar.old', 'apps/bar.new', 'apps/junk'].each do |path|
-        create_dummy_rack_app(path)
+        create_app('rack-simple', path)
       end
       assert_equal ['bar', 'foo', 'junk'], server_dir.apps.map { |app| app.name }.sort
     end
