@@ -57,7 +57,8 @@ module Appserver
     end
 
     def appserver_cmd (*args)
-      cmd = File.expand_path('../../../bin/appserver', __FILE__)
+      cmd = "#{Gem.bindir}/appserver"
+      cmd = File.expand_path('../../../bin/appserver', __FILE__) unless File.executable?(cmd)
       "#{cmd} -d #{path} #{args.join(' ')}"
     end
 
