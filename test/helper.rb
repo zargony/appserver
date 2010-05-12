@@ -5,6 +5,7 @@ require 'mocha'
 
 require 'appserver'
 require 'tmpdir'
+require 'git'
 
 class Test::Unit::TestCase
 
@@ -31,5 +32,18 @@ class Test::Unit::TestCase
     raise 'Target path already exist' if File.exist?(path)
     FileUtils.cp_r File.join(SAMPLE_APPS_PATH, name), path
   end
+
+  # Creates a bare git repository of the named sample app
+  def create_app_repo (name, path)
+    raise 'Target path already exist' if File.exist?(path)
+    path = File.expand_path(path)
+    Dir.chdir(File.join(SAMPLE_APPS_PATH, name)) do
+      raise 'Already a git repository' if File.exist?('.git')
+      git = Git.init('.')
+      git.add('.')
+      git.commit('Initial commit')
+      git.config('core.bare', true)
+      FileUtils.mv '.git', path
+    end
   end
 end
