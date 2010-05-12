@@ -3,6 +3,7 @@ require 'git'
 
 module Appserver
   class InvalidRepositoryError < RuntimeError; end
+  class ExecError < RuntimeError; end
 
   class Repository < Struct.new(:server_dir, :path)
 
@@ -98,6 +99,7 @@ module Appserver
         # If there's a Gemfile, run "bundle install"
         if File.exist?('Gemfile')
           system "#{app.ruby} -S -- bundle install .bundle --without development test"
+          raise ExecError if $?.exitstatus > 0
         end
       end
     end
