@@ -108,13 +108,6 @@ module Appserver
       # Setup gem bundle if present
       if File.exist?(gem_file) && File.directory?(bundle_path)
         ENV.update({ 'GEM_HOME' => bundle_path, 'BUNDLE_PATH' => bundle_path })
-        # Remember load paths of required gems (which use autloading), before bundler takes away the load path
-        remember_paths = $LOAD_PATH.select { |path| path =~ %r(/(unicorn|rack|appserver)[^/]*/) }
-        # Load bundler and setup gem bundle
-        require 'bundler'
-        Bundler.setup
-        # Re-add remembered load paths
-        $LOAD_PATH.unshift *remember_paths
       end
     end
 

@@ -63,7 +63,6 @@ class TestApp < Test::Unit::TestCase
       app = server_dir.app('myapp')
       File.stubs(:exist?).with(app.gem_file).returns(true)
       File.stubs(:directory?).with(app.bundle_path).returns(true)
-      Bundler.expects(:setup)
       app.setup_env!
       assert_not_nil @env['BUNDLE_PATH']
       assert_not_nil @env['GEM_HOME']

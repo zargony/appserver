@@ -90,6 +90,17 @@ configuration files.
 After that, the application will be automatically deployed every time you
 push changes to the repository.
 
+Using Ruby Gems
+---------------
+
+To use Ruby Gems in an application, either install the required gems globally
+(not recommended), or use Bundler. If a `Gemfile` is detected when deploying
+an application, a gem bundle with the required gems will be created
+automatically. Rails 3 supports Bundler out of the box, for older versions
+or other frameworks, you might need to add some initializing code (which
+basically means to call `Bundle.setup`). See the [Bundler website][bundler]
+for details.
+
 How it works
 ------------
 
@@ -143,3 +154,4 @@ Andreas Neuhaus :: <http://zargony.com/>
 [unicorn]: http://unicorn.bogomips.org/
 [git]: http://git-scm.com/
 [rack]: http://rack.rubyforge.org/
+[bundler]: http://gembundler.com/
