@@ -79,12 +79,53 @@ configuration changes.
 Deploying an application
 ------------------------
 
-to be done...
+Deploying an application is easy: simply run `appserver deploy /path/to/repository.git`
+to deploy the application and run `appserver update` to update generated
+configuration files.
+
+    $ cd /var/webapps
+    $ appserver deploy /var/git/myblog.git
+    $ appserver update
+
+After that, the application will be automatically deployed every time you
+push changes to the repository.
 
 How it works
 ------------
 
-to be done...
+In general: every appserver command (except `init`) needs to be run from an
+initialized appserver directory (or you need to specify the appserver directory
+using the -d option). Also, appserver commands do never modify anything outside
+their current appserver directory.
+
+The `deploy` command does two things:
+
+1. It checks out the repository (master branch by default) and installs it to
+   the appserver directory (which also involves symlinking temp directories,
+   creating a gem bundle, and so on).
+2. It installs an update hook script to the repository, that runs the deploy
+   command everytime you push to the repository from now on.
+
+After deploy, there's a ready-to-run copy of the application in the appserver
+directory, that just needs to be started.
+
+The `update` command updates generated configuration files for Monit and Nginx.
+If you properly included the generated configuration files to your system
+configuration, Monit will automatically detect updated configuration files and
+reload the corresponding system processes (even itself).
+
+For every deployed application, Monit is configured to start a Unicorn server
+process with the configured number of instances (Unicorn workers) and keep it
+running. Whenever a different revision of the application is deployed, it
+gracefully restarts the server process (using Unicorn's SIGUSR2/SIGQUIT
+mechanism) without interrupting requests. Nginx is configured to forward
+incoming HTTP requests to the Unix socket of the Unicorn process for the
+corresponding Rack application. Static files are served directly by Nginx for
+performance.
+
+Btw, Monit only runs periodically (typically 60 second cycles), so you might
+have to wait a few seconds until changes are recognized and processes are
+reloaded.
 
 Security considerations
 -----------------------
