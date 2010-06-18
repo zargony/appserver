@@ -4,7 +4,7 @@ module Appserver
   class DirectoryAlreadyExistError < RuntimeError; end
   class NotInitializedError < RuntimeError; end
 
-  class ServerDir < Struct.new(:path, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload, :nginx_reopen, :logrotate_conf)
+  class ServerDir < Struct.new(:path, :monit_conf, :monit_reload, :nginx_conf, :nginx_reload, :nginx_reopen, :logrotate_conf, :ruby)
 
     CONFIG_FILE_NAME = 'appserver.conf.rb'
 
@@ -15,6 +15,7 @@ module Appserver
       :nginx_reload => '/usr/sbin/nginx -s reload',
       :nginx_reopen => '/usr/sbin/nginx -s reopen',
       :logrotate_conf => 'logrotate.conf',
+      :ruby => Utils.find_in_path('ruby') || '/usr/bin/ruby',
     }
 
     SETTINGS_EXPAND = [ :monit_conf, :nginx_conf, :logrotate_conf ]
@@ -56,10 +57,12 @@ module Appserver
       File.join(path, CONFIG_FILE_NAME)
     end
 
+    def ruby_cmd (*args)
+      "#{ruby} -S -- #{args.join(' ')}"
+    end
+
     def appserver_cmd (*args)
-      cmd = "#{Gem.bindir}/appserver"
-      cmd = File.expand_path('../../../bin/appserver', __FILE__) unless File.executable?(cmd)
-      "#{cmd} -d #{path} #{args.join(' ')}"
+      ruby_cmd("appserver -d #{path}", *args)
     end
 
     def apps_path

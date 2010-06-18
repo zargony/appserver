@@ -111,9 +111,13 @@ module Appserver
       end
     end
 
+    def ruby_cmd (*args)
+      "#{ruby} -S -- #{args.join(' ')}"
+    end
+
     def start_server_cmd
       if rack?
-        "#{ruby} -S -- unicorn -E #{environment} -Dc #{unicorn_config} #{rack_config}"
+        ruby_cmd("unicorn -E #{environment} -Dc #{unicorn_config} #{rack_config}")
       end
     end
 

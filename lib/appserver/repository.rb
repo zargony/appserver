@@ -98,7 +98,7 @@ module Appserver
         FileUtils.rm_rf '.bundle'
         # If there's a Gemfile, run "bundle install"
         if File.exist?('Gemfile')
-          system "#{app.ruby} -S -- bundle install .bundle --without development test"
+          system app.ruby_cmd('bundle install .bundle --without development test')
           raise ExecError if $?.exitstatus > 0
         end
       end
