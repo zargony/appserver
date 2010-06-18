@@ -11,7 +11,7 @@ begin
     gem.homepage = 'http://github.com/zargony/appserver'
     gem.authors = ['Andreas Neuhaus']
     gem.requirements << 'a server with Monit, Nginx and Git'
-    gem.add_dependency 'unicorn', '~> 0.97'
+    gem.add_dependency 'unicorn', '~> 1.0'
     gem.add_dependency 'git', '~> 1.2'
     gem.add_dependency 'bundler', '>= 0.9.24'
     gem.has_rdoc = false
