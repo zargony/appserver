@@ -32,16 +32,15 @@ module Appserver
     end
 
     def install_hook
-      deploy_cmd = server_dir.appserver_cmd('deploy')
       if !File.exist?(update_hook) || !File.executable?(update_hook)
         puts "Installing git update hook to repository #{path}..."
         Utils.safe_replace_file(update_hook) do |f|
           f.puts '#!/bin/sh'
-          f.puts "#{deploy_cmd} #{path} $1 $3"
+          f.puts server_dir.appserver_cmd('deploy', path, '$1', '$3')
           f.chown File.stat(path).uid, File.stat(path).gid
           f.chmod 0755
         end
-      elsif !File.readlines(update_hook).any? { |line| line =~ /^#{Regexp.escape(deploy_cmd)}/ }
+      elsif !File.readlines(update_hook).any? { |line| line =~ /appserver.*deploy.*#{Regexp.escape(path)}/ }
         puts "Couldn't install update hook. Foreign hook script already present in repository #{path}!"
       else
         #puts "Hook already installed in repository #{path}"
