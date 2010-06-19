@@ -68,6 +68,12 @@ module Appserver
       File.exist?(rack_config)
     end
 
+    def rails?
+      ['boot.rb', 'environment.rb', 'routes.rb'].all? do |f|
+        File.exist?(File.join(path, 'config', f))
+      end
+    end
+
     def unicorn_config
       File.expand_path('../unicorn.conf.rb', __FILE__)
     end
