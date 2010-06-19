@@ -86,20 +86,28 @@ module Appserver
       File.join(path, '.bundle')
     end
 
+    def tmp_path
+      File.join(server_dir.tmp_path, name)
+    end
+
     def pid_file
-      File.join(server_dir.tmp_path, "#{name}.pid")
+      File.join(tmp_path, 'server.pid')
     end
 
     def socket
-      File.join(server_dir.tmp_path, "#{name}.socket")
+      File.join(tmp_path, 'server.socket')
+    end
+
+    def log_path
+      File.join(server_dir.log_path, name)
     end
 
     def server_log
-      File.join(server_dir.log_path, "#{name}.server.log")
+      File.join(log_path, 'server.log')
     end
 
     def access_log
-      File.join(server_dir.log_path, "#{name}.access.log")
+      File.join(log_path, 'access.log')
     end
 
     def setup_env!
@@ -132,6 +140,12 @@ module Appserver
     end
 
     def start_server
+      [pid_file, socket, server_log].each do |file|
+        dir = File.dirname(file)
+        next if File.exist?(dir)
+        FileUtils.mkdir_p dir
+        FileUtils.chown user, group, dir
+      end
       exec start_server_cmd if start_server?
     end
 

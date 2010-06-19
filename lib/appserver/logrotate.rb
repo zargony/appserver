@@ -29,16 +29,14 @@ module Appserver
         server_dir.apps.each do |app|
           f.puts ""
           f.puts "# Application: #{app.name}"
-          if app.server_log
-            f.puts "#{app.server_log} {"
-            f.puts "  missingok"
-            f.puts "  delaycompress"
-            f.puts "  sharedscripts"
-            f.puts "  postrotate"
-            f.puts "    #{server_dir.appserver_cmd('reopen', app.name)}"
-            f.puts "  endscript"
-            f.puts "}"
-          end
+          f.puts "#{File.join(app.log_path, '*.log')} {"
+          f.puts "  missingok"
+          f.puts "  delaycompress"
+          f.puts "  sharedscripts"
+          f.puts "  postrotate"
+          f.puts "    #{server_dir.appserver_cmd('reopen', app.name)}"
+          f.puts "  endscript"
+          f.puts "}"
         end
       end
     end
