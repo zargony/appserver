@@ -27,9 +27,13 @@ module Appserver
         f.puts "}"
         # Add application-specific Logrotate configuration
         server_dir.apps.each do |app|
+          app_logs = [app.server_log, File.join(app.log_path, "#{app.environment}.log")]
+          app_logs += Dir.glob(File.join(app.log_path, '*.log'))
+          app_logs -= [app.access_log]
+          app_logs.uniq!
           f.puts ""
           f.puts "# Application: #{app.name}"
-          f.puts "#{File.join(app.log_path, '*.log')} {"
+          f.puts "#{app_logs.join(' ')} {"
           f.puts "  missingok"
           f.puts "  delaycompress"
           f.puts "  sharedscripts"
