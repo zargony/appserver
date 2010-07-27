@@ -57,6 +57,11 @@ module Appserver
         checkout(build_path, ref)
         # Install gem bundle if a Gemfile exists
         install_bundle(build_path)
+        # Set up log and tmp directories
+        FileUtils.rm_rf File.join(build_path, 'log')
+        FileUtils.ln_s app.log_path, File.join(build_path, 'log')
+        FileUtils.rm_rf File.join(build_path, 'tmp')
+        FileUtils.ln_s app.tmp_path, File.join(build_path, 'tmp')
 
         # TODO: more deploy setup (write database config, ...)
 

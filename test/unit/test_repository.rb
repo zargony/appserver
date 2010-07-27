@@ -47,4 +47,16 @@ class TestRepository < Test::Unit::TestCase
       repo.deploy # Try it a second time
     end
   end
+
+  def test_log_and_tmp_directories
+    in_server_dir do |server_dir|
+      create_app_repo 'rack-simple', 'hello.git'
+      repo = Appserver::Repository.new(server_dir, 'hello.git', {})
+      repo.deploy
+      assert File.symlink?(File.join(server_dir.app('hello').path, 'log'))
+      assert_equal server_dir.app('hello').log_path, File.readlink(File.join(server_dir.app('hello').path, 'log'))
+      assert File.symlink?(File.join(server_dir.app('hello').path, 'tmp'))
+      assert_equal server_dir.app('hello').tmp_path, File.readlink(File.join(server_dir.app('hello').path, 'tmp'))
+    end
+  end
 end
