@@ -32,7 +32,7 @@ module Appserver
             f.puts "  stop program = \"#{server_dir.appserver_cmd('stop', app.name)}\""
             f.puts "  if totalcpu usage > #{app.max_cpu_usage}#{cyclecheck} then restart" if app.max_cpu_usage
             f.puts "  if totalmemory usage > #{app.max_memory_usage}#{cyclecheck} then restart" if app.max_memory_usage
-            f.puts "  if failed unixsocket #{app.socket} protocol http request \"/\" timeout #{app.http_check_timeout} seconds then restart" if app.http_check_timeout
+            f.puts "  if failed unixsocket #{app.socket} protocol http request \"/\" timeout #{app.http_check_timeout} seconds then restart" if app.http_check_timeout.to_i > 0
             f.puts "  if 5 restarts within 5 cycles then timeout"
             f.puts "  group appserver"
             f.puts "check file #{app.name}_revision with path #{app.revision_file}"
